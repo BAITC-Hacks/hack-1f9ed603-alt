@@ -1,0 +1,133 @@
+{
+  "model_version": "ecmwf_ifs_100m_bin_curve_v1",
+  "quality": {
+    "turbine_1": {
+      "hours": 25392,
+      "complete_hours": 23667,
+      "partial_hours": 96,
+      "empty_hours": 1629
+    },
+    "turbine_2": {
+      "hours": 25392,
+      "complete_hours": 24785,
+      "partial_hours": 219,
+      "empty_hours": 388
+    }
+  },
+  "archive_run_count": 92,
+  "historical_launch_count": 368,
+  "weather_grid_coordinates": {
+    "turbine_1": [
+      43.620384,
+      78.47891
+    ],
+    "turbine_2": [
+      43.620384,
+      78.47891
+    ]
+  },
+  "results": [
+    {
+      "period": "2025-12",
+      "turbine_id": "turbine_1",
+      "horizon_hours": 24,
+      "training_points": 707,
+      "points": 727,
+      "mae": 0.24588720301692318,
+      "constant_mean_mae": 0.34465180512942234,
+      "persistence_points": 723,
+      "persistence_mae": 0.37261871830336557,
+      "model_mae_on_persistence_points": 0.24578710824164943
+    },
+    {
+      "period": "2025-12",
+      "turbine_id": "turbine_1",
+      "horizon_hours": 48,
+      "training_points": 707,
+      "points": 1430,
+      "mae": 0.24934527709815957,
+      "constant_mean_mae": 0.34447667349152494,
+      "persistence_points": 1422,
+      "persistence_mae": 0.3781317393342709,
+      "model_mae_on_persistence_points": 0.2493759919283
+    },
+    {
+      "period": "2025-12",
+      "turbine_id": "turbine_2",
+      "horizon_hours": 24,
+      "training_points": 707,
+      "points": 721,
+      "mae": 0.24622564828324212,
+      "constant_mean_mae": 0.34049895667196994,
+      "persistence_points": 711,
+      "persistence_mae": 0.37235114861697144,
+      "model_mae_on_persistence_points": 0.2448898766197843
+    },
+    {
+      "period": "2025-12",
+      "turbine_id": "turbine_2",
+      "horizon_hours": 48,
+      "training_points": 707,
+      "points": 1418,
+      "mae": 0.2495611800228493,
+      "constant_mean_mae": 0.34038243397178725,
+      "persistence_points": 1400,
+      "persistence_mae": 0.37919761904761906,
+      "model_mae_on_persistence_points": 0.24863458676681408
+    },
+    {
+      "period": "2026-01",
+      "turbine_id": "turbine_1",
+      "horizon_hours": 24,
+      "training_points": 1447,
+      "points": 727,
+      "mae": 0.19218941265268108,
+      "constant_mean_mae": 0.3180018882051974,
+      "persistence_points": 727,
+      "persistence_mae": 0.3863411279229711,
+      "model_mae_on_persistence_points": 0.19218941265268108
+    },
+    {
+      "period": "2026-01",
+      "turbine_id": "turbine_1",
+      "horizon_hours": 48,
+      "training_points": 1447,
+      "points": 1430,
+      "mae": 0.20519462273845396,
+      "constant_mean_mae": 0.3177694772401061,
+      "persistence_points": 1430,
+      "persistence_mae": 0.3681911421911422,
+      "model_mae_on_persistence_points": 0.20519462273845396
+    },
+    {
+      "period": "2026-01",
+      "turbine_id": "turbine_2",
+      "horizon_hours": 24,
+      "training_points": 1441,
+      "points": 727,
+      "mae": 0.19394147272267395,
+      "constant_mean_mae": 0.31732176920034577,
+      "persistence_points": 727,
+      "persistence_mae": 0.3866231086657496,
+      "model_mae_on_persistence_points": 0.19394147272267395
+    },
+    {
+      "period": "2026-01",
+      "turbine_id": "turbine_2",
+      "horizon_hours": 48,
+      "training_points": 1441,
+      "points": 1430,
+      "mae": 0.20658897245158706,
+      "constant_mean_mae": 0.31705821601484335,
+      "persistence_points": 1430,
+      "persistence_mae": 0.3639277389277389,
+      "model_mae_on_persistence_points": 0.20658897245158706
+    }
+  ],
+  "limitations": [
+    "CSV UTC offset is a user-provided working assumption, not confirmed by organizers.",
+    "Ten-minute timestamp interval position is unknown; hourly alignment is an assumption.",
+    "Exact historical weather publication times are not supplied; use is delayed 12 hours.",
+    "Weather is forecast wind at 100 m; height of CSV wind measurements is unknown."
+  ]
+}
