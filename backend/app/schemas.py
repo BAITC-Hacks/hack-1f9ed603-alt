@@ -6,7 +6,7 @@ from datetime import datetime, timedelta, timezone
 from typing import Literal
 from uuid import UUID
 
-from pydantic import BaseModel, Field, field_serializer, field_validator, model_validator
+from pydantic import BaseModel, ConfigDict, Field, field_serializer, field_validator, model_validator
 
 
 def require_aware_utc(value: datetime) -> datetime:
@@ -55,6 +55,20 @@ class ForecastRunRequest(BaseModel):
         except OverflowError as exc:
             raise ValueError("Дата запуска выходит за поддерживаемый диапазон") from exc
         return self
+
+
+class AssistantParametersRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+
+    message: str = Field(min_length=1, max_length=4000, strict=True)
+    defaults: ForecastRunRequest
+    language: Literal["ru", "kk", "en"] = "ru"
+
+
+class AssistantParametersResponse(BaseModel):
+    status: Literal["ready", "clarification"]
+    request: ForecastRunRequest | None
+    message: str | None
 
 
 class ForecastPoint(BaseModel):

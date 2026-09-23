@@ -6,6 +6,8 @@ services:
     environment:
       DATA_DIR: /app/data/raw
       RUNS_DB_PATH: /app/state/runs.sqlite3
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_MODEL: ${OPENAI_MODEL:-gpt-4o-mini}
     volumes:
       - ./data/raw:/app/data/raw:ro
       - ./data/weather/ecmwf_ifs:/app/data/weather/ecmwf_ifs

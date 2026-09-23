@@ -13,9 +13,15 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
+from backend.app.assistant_service import AssistantError, parse_forecast_parameters
 from backend.app.db import save_run
 from backend.app.forecast_service import EngineNotReady, InvalidForecast, SourceUnavailable, run_forecast
-from backend.app.schemas import ForecastRunRequest, ForecastRunResponse
+from backend.app.schemas import (
+    AssistantParametersRequest,
+    AssistantParametersResponse,
+    ForecastRunRequest,
+    ForecastRunResponse,
+)
 from forecasting.dataset import TURBINE_IDS, TurbineSummary, summarize_turbine
 
 LOGGER = logging.getLogger(__name__)
@@ -81,3 +87,11 @@ def create_forecast_run(request: ForecastRunRequest) -> ForecastRunResponse:
         LOGGER.exception("Не удалось сохранить прогноз")
         raise HTTPException(status_code=503, detail="Не удалось сохранить прогноз") from exc
     return result
+
+
+@app.post("/api/assistant/forecast-parameters", response_model=AssistantParametersResponse)
+def assistant_parameters(request: AssistantParametersRequest) -> AssistantParametersResponse:
+    try:
+        return parse_forecast_parameters(request)
+    except AssistantError as exc:
+        raise HTTPException(status_code=exc.status_code, detail=str(exc)) from None

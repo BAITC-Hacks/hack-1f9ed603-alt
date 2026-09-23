@@ -1,4 +1,4 @@
-import type { MessageKey } from "./messages";
+import type { Language, MessageKey } from "./messages";
 
 export type TurbineSummary = {
   id: "turbine_1" | "turbine_2";
@@ -18,6 +18,16 @@ export type ForecastRunRequest = {
   issued_at: string;
   horizon_hours: 24 | 48;
 };
+
+export type AssistantRequest = {
+  message: string;
+  defaults: ForecastRunRequest;
+  language: Language;
+};
+
+export type AssistantResponse =
+  | { status: "ready"; request: ForecastRunRequest; message: null }
+  | { status: "clarification"; request: null; message: string };
 
 export type ForecastPoint = {
   time: string;
@@ -62,6 +72,11 @@ const serverMessages: readonly MessageKey[] = [
   "Прогнозная модель вернула некорректный результат",
   "Не удалось сохранить прогноз",
   "Внутренняя ошибка сервера",
+  "Сервис ИИ не настроен",
+  "Ключ сервиса ИИ отклонён",
+  "Лимит сервиса ИИ исчерпан",
+  "Сервис ИИ временно недоступен",
+  "Сервис ИИ вернул некорректный ответ",
 ];
 
 function serverError(status: number, body: unknown): ApiError {
@@ -105,6 +120,57 @@ export function getTurbines(): Promise<TurbinesResponse> {
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+export function issuedAtError(value: string): MessageKey | null {
+  const parts = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2})(?:\.(\d+))?)?(Z|[+-]\d{2}:\d{2})$/.exec(value);
+  if (!parts || !Number.isFinite(Date.parse(value))) {
+    return "Введите время в ISO 8601 с часовым поясом, например 2026-02-01T12:00:00Z";
+  }
+  const [, year, month, day, hour, minute, second = "0", fraction = "", zone] = parts;
+  // setUTCFullYear also handles years 0001–0099 without Date.UTC's 1900 offset.
+  const calendarDay = new Date(0);
+  calendarDay.setUTCFullYear(Number(year), Number(month) - 1, Number(day));
+  if (Number(year) < 1 || calendarDay.getUTCFullYear() !== Number(year) ||
+      calendarDay.getUTCMonth() + 1 !== Number(month) || calendarDay.getUTCDate() !== Number(day) ||
+      Number(hour) > 23 || Number(minute) > 59 || Number(second) > 59 ||
+      (zone !== "Z" && (Number(zone.slice(1, 3)) > 23 || Number(zone.slice(4)) > 59))) {
+    return "Укажите существующую дату и время";
+  }
+  // Date.parse truncates sub-millisecond digits; reject those explicitly as well.
+  if (/[1-9]/.test(fraction) || Date.parse(value) % 3_600_000 !== 0) {
+    return "Запуск должен приходиться на начало часа по UTC";
+  }
+  return null;
+}
+
+function isForecastRunRequest(value: unknown): value is ForecastRunRequest {
+  return isRecord(value) && Object.keys(value).length === 3 &&
+    (value.turbine_id === "turbine_1" || value.turbine_id === "turbine_2") &&
+    (value.horizon_hours === 24 || value.horizon_hours === 48) &&
+    typeof value.issued_at === "string" && issuedAtError(value.issued_at) === null;
+}
+
+export async function getAssistantForecastParameters(payload: AssistantRequest): Promise<AssistantResponse> {
+  const message = payload.message.trim();
+  if (!message || message.length > 4000 || !isForecastRunRequest(payload.defaults) ||
+      !["ru", "kk", "en"].includes(payload.language)) {
+    throw new ApiError("Сервер отклонил параметры запроса. Проверьте время, турбину и горизонт.");
+  }
+  const result = await request<unknown>("/api/assistant/forecast-parameters", {
+    method: "POST",
+    body: JSON.stringify({ ...payload, message }),
+  });
+  if (isRecord(result) && Object.keys(result).length === 3) {
+    if (result.status === "ready" && result.message === null && isForecastRunRequest(result.request)) {
+      return { status: "ready", request: result.request, message: null };
+    }
+    if (result.status === "clarification" && result.request === null &&
+        typeof result.message === "string" && result.message.trim() && result.message.length <= 4000) {
+      return { status: "clarification", request: null, message: result.message.trim() };
+    }
+  }
+  throw new ApiError("Сервис ИИ вернул некорректный ответ");
 }
 
 function parseZonedTime(value: unknown): number {
