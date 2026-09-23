@@ -49,6 +49,21 @@ Six of 1,392 launch/lead pairs per turbine in the 48-hour replay fall beyond the
 
 Malformed weather, non-finite/negative wind, duplicate or shifted weather timestamps, wrong units, invalid power curves, and inconsistent training cutoffs are rejected. Weather responses are validated before caching. JSON caches, model artifacts, and manifests are replaced atomically, so concurrent readers see a complete file. Failed runs never become placeholder forecasts.
 
+## Extended weather experiment
+
+The optional [archived-feature experiment](FEATURE_EXPERIMENT.md) keeps the supplied
+CSV targets and the same time alignment, and adds wind direction, wind at 10 m,
+temperature, pressure, and derived features from 92 archived ECMWF runs. The
+December-selected candidate reduces pooled MAE from 0.32776 to 0.26998 in December
+and from 0.28852 to 0.24369 in January. A wind-only temporal-feature control does
+better in January, so the added weather variables do not yet show a consistent
+advantage. The experiment is offline and does not replace the API model.
+
+```bash
+python -m pip install -r forecasting/requirements-experiment.txt
+python -m forecasting.experiment_features
+```
+
 ## Backend handoff
 
 `forecasting.runner.run_forecast(turbine_id, issued_at, horizon_hours)` is the entry point used by the backend adapter. It returns the required forecast fields with 24 or 48 hourly points, model version, input-data cutoff, and weather provenance. `forecasting.forecast.forecast` also provides a standalone full result and CLI. Missing or incompatible model/weather raises `ForecastUnavailable` (`OSError`), which backend maps to HTTP 503. It never returns placeholder power values. The forecasting result, replay manifest, public API, and UI separately expose `weather_run_initialized_at`, `weather_run_usable_after_at`, and unknown `weather_actual_publication_at`. The legacy `weather_run_issued_at` is a cycle-time alias retained for compatibility; see `shared/API.md`.

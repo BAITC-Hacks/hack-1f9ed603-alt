@@ -1,0 +1,1376 @@
+{
+  "experiment": "archived_weather_features_v1",
+  "feature_profile": "extended_weather_v1",
+  "time_alignment": {
+    "policy": "as_provided_no_shift",
+    "source_timezone": null,
+    "source_clock_shift_hours": 0,
+    "forecast_axis": "UTC",
+    "basis": "Match source clock labels directly to weather/API clock labels per user instruction; source timezone is unspecified."
+  },
+  "provenance": {
+    "raw_csv_sha256": {
+      "turbine_1": "c4c341582fb2dd348b7187f0128cff265fe055f469413871ebb5db50eef58b5b",
+      "turbine_2": "820578cd18bb557cd30c2e102f3ae5a386dfc6c489a5a15743339c2b017305e5"
+    },
+    "weather_runs": [
+      {
+        "initialized_at": "2025-11-01T00:00:00+00:00",
+        "usable_after_at": "2025-11-01T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20251101T0000Z",
+        "file": "ecmwf_ifs_20251101T0000Z.json",
+        "sha256": "0ec3eaf66611a948086444959ec3cfc2e7a750838eb63a3071bd545db4413e54"
+      },
+      {
+        "initialized_at": "2025-11-02T00:00:00+00:00",
+        "usable_after_at": "2025-11-02T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20251102T0000Z",
+        "file": "ecmwf_ifs_20251102T0000Z.json",
+        "sha256": "868b35ac0bcaea5a445a9fb4e687f9bec0c664d964a65c5a2c8277de2c453793"
+      },
+      {
+        "initialized_at": "2025-11-03T00:00:00+00:00",
+        "usable_after_at": "2025-11-03T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20251103T0000Z",
+        "file": "ecmwf_ifs_20251103T0000Z.json",
+        "sha256": "4d566d412a3677c3e2037cc01da2d145d0f9e0c7c02a4236676c9e8fc5c582f8"
+      },
+      {
+        "initialized_at": "2025-11-04T00:00:00+00:00",
+        "usable_after_at": "2025-11-04T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20251104T0000Z",
+        "file": "ecmwf_ifs_20251104T0000Z.json",
+        "sha256": "998e8d0d1e62fc6369049d2b0e5c2f814e3fb6fa5513374aa394a2ac0d21674e"
+      },
+      {
+        "initialized_at": "2025-11-05T00:00:00+00:00",
+        "usable_after_at": "2025-11-05T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20251105T0000Z",
+        "file": "ecmwf_ifs_20251105T0000Z.json",
+        "sha256": "f1e4f7c473d7054df5c118e8c89e708704e99d3846281012cae147342f2bf23a"
+      },
+      {
+        "initialized_at": "2025-11-06T00:00:00+00:00",
+        "usable_after_at": "2025-11-06T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20251106T0000Z",
+        "file": "ecmwf_ifs_20251106T0000Z.json",
+        "sha256": "ff2a038c06072cb60c237dd949e69b6c461968d72c0485632d569a1a795d1180"
+      },
+      {
+        "initialized_at": "2025-11-07T00:00:00+00:00",
+        "usable_after_at": "2025-11-07T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20251107T0000Z",
+        "file": "ecmwf_ifs_20251107T0000Z.json",
+        "sha256": "05dd470cf0295886343c0224522515ba7c9815e9a29608bd70202f02dd084923"
+      },
+      {
+        "initialized_at": "2025-11-08T00:00:00+00:00",
+        "usable_after_at": "2025-11-08T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20251108T0000Z",
+        "file": "ecmwf_ifs_20251108T0000Z.json",
+        "sha256": "df7fef2d43e908ce504ece04680eca4f37673b52d9d7f468949de931b77aa01b"
+      },
+      {
+        "initialized_at": "2025-11-09T00:00:00+00:00",
+        "usable_after_at": "2025-11-09T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20251109T0000Z",
+        "file": "ecmwf_ifs_20251109T0000Z.json",
+        "sha256": "138f2d794558af7b960044e019377783c8d83299b0a0b432309ca6fa169b73b1"
+      },
+      {
+        "initialized_at": "2025-11-10T00:00:00+00:00",
+        "usable_after_at": "2025-11-10T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20251110T0000Z",
+        "file": "ecmwf_ifs_20251110T0000Z.json",
+        "sha256": "9edab5d6b9fa9f5bd7d28602d10d41a290ed50b42a5fcb0de23900572eb902b0"
+      },
+      {
+        "initialized_at": "2025-11-11T00:00:00+00:00",
+        "usable_after_at": "2025-11-11T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20251111T0000Z",
+        "file": "ecmwf_ifs_20251111T0000Z.json",
+        "sha256": "104c6fd15123e82096d664bc9b938b3f965e97b5ca8d2912199048b8eca22674"
+      },
+      {
+        "initialized_at": "2025-11-12T00:00:00+00:00",
+        "usable_after_at": "2025-11-12T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20251112T0000Z",
+        "file": "ecmwf_ifs_20251112T0000Z.json",
+        "sha256": "bac54647b5bed03b82944e4ab7cf9b0765269e6de7767f1d14be6b6187fb14b5"
+      },
+      {
+        "initialized_at": "2025-11-13T00:00:00+00:00",
+        "usable_after_at": "2025-11-13T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20251113T0000Z",
+        "file": "ecmwf_ifs_20251113T0000Z.json",
+        "sha256": "e256cef6ab9cd94e20c39ab93a03924d45eb95025b807e5f7a56d75060a3d699"
+      },
+      {
+        "initialized_at": "2025-11-14T00:00:00+00:00",
+        "usable_after_at": "2025-11-14T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20251114T0000Z",
+        "file": "ecmwf_ifs_20251114T0000Z.json",
+        "sha256": "f8b96931b126c871fe2390190fdf5b4b27521eac264449c9cc90f58f3af68951"
+      },
+      {
+        "initialized_at": "2025-11-15T00:00:00+00:00",
+        "usable_after_at": "2025-11-15T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20251115T0000Z",
+        "file": "ecmwf_ifs_20251115T0000Z.json",
+        "sha256": "ccd837363998e27db61bc021ce7a9cbeb442c6b4c37a7c69cf2b09a8f3a97542"
+      },
+      {
+        "initialized_at": "2025-11-16T00:00:00+00:00",
+        "usable_after_at": "2025-11-16T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20251116T0000Z",
+        "file": "ecmwf_ifs_20251116T0000Z.json",
+        "sha256": "f053cb4a4415d08aa27045fb200cbdc5e6e20cc469eeaa006a60ea5ad4599914"
+      },
+      {
+        "initialized_at": "2025-11-17T00:00:00+00:00",
+        "usable_after_at": "2025-11-17T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20251117T0000Z",
+        "file": "ecmwf_ifs_20251117T0000Z.json",
+        "sha256": "f6701de2947387a23d2013c5e6d24323729be9dda82903efe9028be706c6ab0b"
+      },
+      {
+        "initialized_at": "2025-11-18T00:00:00+00:00",
+        "usable_after_at": "2025-11-18T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20251118T0000Z",
+        "file": "ecmwf_ifs_20251118T0000Z.json",
+        "sha256": "f3c7b4a3b122f1553fb6b35bece1f9e3f3427a0e6a1be1e2641a923ffcda8621"
+      },
+      {
+        "initialized_at": "2025-11-19T00:00:00+00:00",
+        "usable_after_at": "2025-11-19T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20251119T0000Z",
+        "file": "ecmwf_ifs_20251119T0000Z.json",
+        "sha256": "f2b3ffe4a2bc419f93826ce6b06336818df3ab4a858ebc48878de358128c1c65"
+      },
+      {
+        "initialized_at": "2025-11-20T00:00:00+00:00",
+        "usable_after_at": "2025-11-20T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20251120T0000Z",
+        "file": "ecmwf_ifs_20251120T0000Z.json",
+        "sha256": "7f9ac972e0f3aab925c54751080941f067c1391112e3f340aa3a169f356b59f0"
+      },
+      {
+        "initialized_at": "2025-11-21T00:00:00+00:00",
+        "usable_after_at": "2025-11-21T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20251121T0000Z",
+        "file": "ecmwf_ifs_20251121T0000Z.json",
+        "sha256": "0f3d5651ed68a57774f07219abcb49f64637f43777f006aaa37ac38b51e52451"
+      },
+      {
+        "initialized_at": "2025-11-22T00:00:00+00:00",
+        "usable_after_at": "2025-11-22T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20251122T0000Z",
+        "file": "ecmwf_ifs_20251122T0000Z.json",
+        "sha256": "7fc1cea0ca80a5ab2296dcd0fab845b0129e38117965e2e70d9794a088b67cef"
+      },
+      {
+        "initialized_at": "2025-11-23T00:00:00+00:00",
+        "usable_after_at": "2025-11-23T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20251123T0000Z",
+        "file": "ecmwf_ifs_20251123T0000Z.json",
+        "sha256": "03c57ce253be33499fc706ed093cf93309fb1cc1de8dcc0867bdc7848cc7aacc"
+      },
+      {
+        "initialized_at": "2025-11-24T00:00:00+00:00",
+        "usable_after_at": "2025-11-24T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20251124T0000Z",
+        "file": "ecmwf_ifs_20251124T0000Z.json",
+        "sha256": "22b253e76cad1afd4ed0a42a577833eed4f157dbb57b97cbca944c86c46ec98a"
+      },
+      {
+        "initialized_at": "2025-11-25T00:00:00+00:00",
+        "usable_after_at": "2025-11-25T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20251125T0000Z",
+        "file": "ecmwf_ifs_20251125T0000Z.json",
+        "sha256": "b491bf6692d961b3139045842d21aa5a97ee176f7a9b5a8c582cc66e0fc1a2a5"
+      },
+      {
+        "initialized_at": "2025-11-26T00:00:00+00:00",
+        "usable_after_at": "2025-11-26T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20251126T0000Z",
+        "file": "ecmwf_ifs_20251126T0000Z.json",
+        "sha256": "ee0ca4ff25bdfb8783941751437a65d2f00b82d888525e0d1efae8967b1c1043"
+      },
+      {
+        "initialized_at": "2025-11-27T00:00:00+00:00",
+        "usable_after_at": "2025-11-27T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20251127T0000Z",
+        "file": "ecmwf_ifs_20251127T0000Z.json",
+        "sha256": "bd338577dd5fff35970de9a54ab398f3f10bfd029c8e9ddd37e9c80f73f0a695"
+      },
+      {
+        "initialized_at": "2025-11-28T00:00:00+00:00",
+        "usable_after_at": "2025-11-28T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20251128T0000Z",
+        "file": "ecmwf_ifs_20251128T0000Z.json",
+        "sha256": "6b8347480eaa7892315337e90f995b16b1eab733dc20525e6629b2b73786d6bc"
+      },
+      {
+        "initialized_at": "2025-11-29T00:00:00+00:00",
+        "usable_after_at": "2025-11-29T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20251129T0000Z",
+        "file": "ecmwf_ifs_20251129T0000Z.json",
+        "sha256": "93b6c51d863d728d208e98c2f7c08cd4a88913b76afd191ed87adb4312f58dc8"
+      },
+      {
+        "initialized_at": "2025-11-30T00:00:00+00:00",
+        "usable_after_at": "2025-11-30T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20251130T0000Z",
+        "file": "ecmwf_ifs_20251130T0000Z.json",
+        "sha256": "8487c7d18b083c8fc4847f266edc9e3cc85adedff797d092d1aa1401d7a6d3de"
+      },
+      {
+        "initialized_at": "2025-12-01T00:00:00+00:00",
+        "usable_after_at": "2025-12-01T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20251201T0000Z",
+        "file": "ecmwf_ifs_20251201T0000Z.json",
+        "sha256": "46af155c08e5fd1ac855ceafad0e798b37801b33e578c9040772048180167244"
+      },
+      {
+        "initialized_at": "2025-12-02T00:00:00+00:00",
+        "usable_after_at": "2025-12-02T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20251202T0000Z",
+        "file": "ecmwf_ifs_20251202T0000Z.json",
+        "sha256": "83059850893df31ed6d56b34ee0502172fabd26077b77cdc91e95c6b652926c4"
+      },
+      {
+        "initialized_at": "2025-12-03T00:00:00+00:00",
+        "usable_after_at": "2025-12-03T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20251203T0000Z",
+        "file": "ecmwf_ifs_20251203T0000Z.json",
+        "sha256": "748271452f7d61a608434c09d62d43e2207dd1dd024400c52049d310795c570e"
+      },
+      {
+        "initialized_at": "2025-12-04T00:00:00+00:00",
+        "usable_after_at": "2025-12-04T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20251204T0000Z",
+        "file": "ecmwf_ifs_20251204T0000Z.json",
+        "sha256": "7f6cc2718159ebdcb4068e9084e647796655cf81d062f0bfc1439cf94c7269b9"
+      },
+      {
+        "initialized_at": "2025-12-05T00:00:00+00:00",
+        "usable_after_at": "2025-12-05T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20251205T0000Z",
+        "file": "ecmwf_ifs_20251205T0000Z.json",
+        "sha256": "4c3d06973f87d6ebdf6535b2c8fdcd0078c02e0080e360b40a197867067abd59"
+      },
+      {
+        "initialized_at": "2025-12-06T00:00:00+00:00",
+        "usable_after_at": "2025-12-06T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20251206T0000Z",
+        "file": "ecmwf_ifs_20251206T0000Z.json",
+        "sha256": "a25249cea595c51ce4108c5d8b7cff098b6c0fc7ac4c232c398ef8d17f84757f"
+      },
+      {
+        "initialized_at": "2025-12-07T00:00:00+00:00",
+        "usable_after_at": "2025-12-07T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20251207T0000Z",
+        "file": "ecmwf_ifs_20251207T0000Z.json",
+        "sha256": "2d84b92a0c8eba596e8bf098b099f16a83468c71e0b46f16e5d1f5977b6eb490"
+      },
+      {
+        "initialized_at": "2025-12-08T00:00:00+00:00",
+        "usable_after_at": "2025-12-08T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20251208T0000Z",
+        "file": "ecmwf_ifs_20251208T0000Z.json",
+        "sha256": "3613d4f3311ee558afdf2b6152eb8f2a0fdcaf280f185571ceea7c5e59036cae"
+      },
+      {
+        "initialized_at": "2025-12-09T00:00:00+00:00",
+        "usable_after_at": "2025-12-09T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20251209T0000Z",
+        "file": "ecmwf_ifs_20251209T0000Z.json",
+        "sha256": "608a1415aa73c8dcc1df1bac5d215a3befe5ea559e5f646ef58ef4afae4bd477"
+      },
+      {
+        "initialized_at": "2025-12-10T00:00:00+00:00",
+        "usable_after_at": "2025-12-10T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20251210T0000Z",
+        "file": "ecmwf_ifs_20251210T0000Z.json",
+        "sha256": "d5350a41e3730cdfe335e438e5eba267ad85c4c456449591698feed35a6eb1f5"
+      },
+      {
+        "initialized_at": "2025-12-11T00:00:00+00:00",
+        "usable_after_at": "2025-12-11T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20251211T0000Z",
+        "file": "ecmwf_ifs_20251211T0000Z.json",
+        "sha256": "f3208e96c29c4c526b4e50d9a3c1de84ce2bcbcd0fc79b09de104e2665cdba0b"
+      },
+      {
+        "initialized_at": "2025-12-12T00:00:00+00:00",
+        "usable_after_at": "2025-12-12T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20251212T0000Z",
+        "file": "ecmwf_ifs_20251212T0000Z.json",
+        "sha256": "ca98c5848c11daf63662850c89d7176341deeaa58ffd2077a1256a3747f6fb15"
+      },
+      {
+        "initialized_at": "2025-12-13T00:00:00+00:00",
+        "usable_after_at": "2025-12-13T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20251213T0000Z",
+        "file": "ecmwf_ifs_20251213T0000Z.json",
+        "sha256": "918b3b7bf127032ffd052f31ac005aa95e158bb2f601998bc3a878a4fcc023ee"
+      },
+      {
+        "initialized_at": "2025-12-14T00:00:00+00:00",
+        "usable_after_at": "2025-12-14T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20251214T0000Z",
+        "file": "ecmwf_ifs_20251214T0000Z.json",
+        "sha256": "f6e4b6c67b2ba9e1d71d4faebf4417d9cc5ee98dca773ee7e3aac3231908eb5c"
+      },
+      {
+        "initialized_at": "2025-12-15T00:00:00+00:00",
+        "usable_after_at": "2025-12-15T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20251215T0000Z",
+        "file": "ecmwf_ifs_20251215T0000Z.json",
+        "sha256": "3c9ce9cc05219b09f710e3cb2e5d68ff4f9717aa4a5b4d49c318b653418ffd0d"
+      },
+      {
+        "initialized_at": "2025-12-16T00:00:00+00:00",
+        "usable_after_at": "2025-12-16T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20251216T0000Z",
+        "file": "ecmwf_ifs_20251216T0000Z.json",
+        "sha256": "f0cc87c964a8add29ced7f4fbbf3341c1ad836562ff741c9162249da19995494"
+      },
+      {
+        "initialized_at": "2025-12-17T00:00:00+00:00",
+        "usable_after_at": "2025-12-17T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20251217T0000Z",
+        "file": "ecmwf_ifs_20251217T0000Z.json",
+        "sha256": "fe90388741e5621f1428e944e297a9f4e156281f7a2310da2e386b4bbfba1411"
+      },
+      {
+        "initialized_at": "2025-12-18T00:00:00+00:00",
+        "usable_after_at": "2025-12-18T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20251218T0000Z",
+        "file": "ecmwf_ifs_20251218T0000Z.json",
+        "sha256": "f5c970578f212d15c0dc2493017d5265c67e57ee06986c656a6da884079d1f4d"
+      },
+      {
+        "initialized_at": "2025-12-19T00:00:00+00:00",
+        "usable_after_at": "2025-12-19T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20251219T0000Z",
+        "file": "ecmwf_ifs_20251219T0000Z.json",
+        "sha256": "00349b4a31004db3a59e9099c82e45a0faa88957d494ea99528326b7ed181228"
+      },
+      {
+        "initialized_at": "2025-12-20T00:00:00+00:00",
+        "usable_after_at": "2025-12-20T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20251220T0000Z",
+        "file": "ecmwf_ifs_20251220T0000Z.json",
+        "sha256": "ce70dc38b16188d5e4c8aba96933ea3c78fa88b664eccabb88f689a64ae6eca8"
+      },
+      {
+        "initialized_at": "2025-12-21T00:00:00+00:00",
+        "usable_after_at": "2025-12-21T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20251221T0000Z",
+        "file": "ecmwf_ifs_20251221T0000Z.json",
+        "sha256": "e2bb99f47f6d6a2bef241013c3390f4455425589423571ef8daabdd719cb31c7"
+      },
+      {
+        "initialized_at": "2025-12-22T00:00:00+00:00",
+        "usable_after_at": "2025-12-22T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20251222T0000Z",
+        "file": "ecmwf_ifs_20251222T0000Z.json",
+        "sha256": "a8a4c7e666ae609c2fe62b32f1216610f598a47877968c0d33a0f961b8640556"
+      },
+      {
+        "initialized_at": "2025-12-23T00:00:00+00:00",
+        "usable_after_at": "2025-12-23T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20251223T0000Z",
+        "file": "ecmwf_ifs_20251223T0000Z.json",
+        "sha256": "e89ccd374fe8f3933effac4112dd5b25acad73282fd89e3fb0b64ac4b68dd25f"
+      },
+      {
+        "initialized_at": "2025-12-24T00:00:00+00:00",
+        "usable_after_at": "2025-12-24T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20251224T0000Z",
+        "file": "ecmwf_ifs_20251224T0000Z.json",
+        "sha256": "9f4172fc3bb55a80cfa3a3113231f04edb052e20fa110e32e2854e7a54571203"
+      },
+      {
+        "initialized_at": "2025-12-25T00:00:00+00:00",
+        "usable_after_at": "2025-12-25T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20251225T0000Z",
+        "file": "ecmwf_ifs_20251225T0000Z.json",
+        "sha256": "e0f236dc10da679127e9d04d6100d55728019b84e47226e767c84fe4fb44acd0"
+      },
+      {
+        "initialized_at": "2025-12-26T00:00:00+00:00",
+        "usable_after_at": "2025-12-26T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20251226T0000Z",
+        "file": "ecmwf_ifs_20251226T0000Z.json",
+        "sha256": "add2b4ac1e38e1fba6fc461d8ed96a4abec95740d28f21cffc6bee0c971df6f8"
+      },
+      {
+        "initialized_at": "2025-12-27T00:00:00+00:00",
+        "usable_after_at": "2025-12-27T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20251227T0000Z",
+        "file": "ecmwf_ifs_20251227T0000Z.json",
+        "sha256": "c1ca74189c70f020867a0ea98e979c15a44718112772431696163aea262a5dcc"
+      },
+      {
+        "initialized_at": "2025-12-28T00:00:00+00:00",
+        "usable_after_at": "2025-12-28T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20251228T0000Z",
+        "file": "ecmwf_ifs_20251228T0000Z.json",
+        "sha256": "28fa799b90f295123e97555f383059c385bd75d2f822c5fe119dfe6866f9f167"
+      },
+      {
+        "initialized_at": "2025-12-29T00:00:00+00:00",
+        "usable_after_at": "2025-12-29T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20251229T0000Z",
+        "file": "ecmwf_ifs_20251229T0000Z.json",
+        "sha256": "f4a59042b0faeb08b68b4d1336e05561581f973366f2f0936b28305b851cc772"
+      },
+      {
+        "initialized_at": "2025-12-30T00:00:00+00:00",
+        "usable_after_at": "2025-12-30T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20251230T0000Z",
+        "file": "ecmwf_ifs_20251230T0000Z.json",
+        "sha256": "4b5b00a4ac20d8c2c529e9df4c82f4410d77b32a40483c8ffabc938318f18d0a"
+      },
+      {
+        "initialized_at": "2025-12-31T00:00:00+00:00",
+        "usable_after_at": "2025-12-31T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20251231T0000Z",
+        "file": "ecmwf_ifs_20251231T0000Z.json",
+        "sha256": "2e1fc0112e870a6d5695669fcd07e03c8ac69b798bace70bf2e75ae62ce317bd"
+      },
+      {
+        "initialized_at": "2026-01-01T00:00:00+00:00",
+        "usable_after_at": "2026-01-01T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20260101T0000Z",
+        "file": "ecmwf_ifs_20260101T0000Z.json",
+        "sha256": "19f22438ab0648d1a5cbbcdc15be5a76c5f75fdbe9864152445c0f79dd254ee7"
+      },
+      {
+        "initialized_at": "2026-01-02T00:00:00+00:00",
+        "usable_after_at": "2026-01-02T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20260102T0000Z",
+        "file": "ecmwf_ifs_20260102T0000Z.json",
+        "sha256": "00e71dbb87134518da87b14c9d231107e087b0518b7604ef3e4d02212055f43e"
+      },
+      {
+        "initialized_at": "2026-01-03T00:00:00+00:00",
+        "usable_after_at": "2026-01-03T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20260103T0000Z",
+        "file": "ecmwf_ifs_20260103T0000Z.json",
+        "sha256": "744478b7f5a5bd9de17b548486addf76bc56c87a6f9a19904089335ce5db4ced"
+      },
+      {
+        "initialized_at": "2026-01-04T00:00:00+00:00",
+        "usable_after_at": "2026-01-04T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20260104T0000Z",
+        "file": "ecmwf_ifs_20260104T0000Z.json",
+        "sha256": "6974a5c6dd56c1ef8a2e01d50e211d252af0259b840398edeebf14ff677d3862"
+      },
+      {
+        "initialized_at": "2026-01-05T00:00:00+00:00",
+        "usable_after_at": "2026-01-05T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20260105T0000Z",
+        "file": "ecmwf_ifs_20260105T0000Z.json",
+        "sha256": "25dcb9a10a1f0ef85b42d8e49b6c99f7379bcb86fde4ed8b8fd469b7b622254c"
+      },
+      {
+        "initialized_at": "2026-01-06T00:00:00+00:00",
+        "usable_after_at": "2026-01-06T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20260106T0000Z",
+        "file": "ecmwf_ifs_20260106T0000Z.json",
+        "sha256": "57141c2752624de6167cfc349a56074de48236b47451caa91b0f28a954bfbd9d"
+      },
+      {
+        "initialized_at": "2026-01-07T00:00:00+00:00",
+        "usable_after_at": "2026-01-07T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20260107T0000Z",
+        "file": "ecmwf_ifs_20260107T0000Z.json",
+        "sha256": "d336d365461dae128cd3997451524516e012e283f1b36b436c47f9d28bfa4797"
+      },
+      {
+        "initialized_at": "2026-01-08T00:00:00+00:00",
+        "usable_after_at": "2026-01-08T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20260108T0000Z",
+        "file": "ecmwf_ifs_20260108T0000Z.json",
+        "sha256": "f66c85777e899a24a099597dd9118791c6aee955874eace2a63ff28df25f4397"
+      },
+      {
+        "initialized_at": "2026-01-09T00:00:00+00:00",
+        "usable_after_at": "2026-01-09T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20260109T0000Z",
+        "file": "ecmwf_ifs_20260109T0000Z.json",
+        "sha256": "3239741555cf7cc6d17d9005606a93b4929336c537e744181ccde562c9496a47"
+      },
+      {
+        "initialized_at": "2026-01-10T00:00:00+00:00",
+        "usable_after_at": "2026-01-10T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20260110T0000Z",
+        "file": "ecmwf_ifs_20260110T0000Z.json",
+        "sha256": "ad281d01000d103378437f3abf0a0da9e83989759044a21edc1bc893632b6302"
+      },
+      {
+        "initialized_at": "2026-01-11T00:00:00+00:00",
+        "usable_after_at": "2026-01-11T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20260111T0000Z",
+        "file": "ecmwf_ifs_20260111T0000Z.json",
+        "sha256": "bbd7bfb5b660f6d81cb097a85850535c09128d9f4e1e2dbead9aaf515a3cefbb"
+      },
+      {
+        "initialized_at": "2026-01-12T00:00:00+00:00",
+        "usable_after_at": "2026-01-12T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20260112T0000Z",
+        "file": "ecmwf_ifs_20260112T0000Z.json",
+        "sha256": "1a19c52eb900eb075a6b32d75d3a4f3b7f2a9a8cfb800c98327b9702a3f9be0a"
+      },
+      {
+        "initialized_at": "2026-01-13T00:00:00+00:00",
+        "usable_after_at": "2026-01-13T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20260113T0000Z",
+        "file": "ecmwf_ifs_20260113T0000Z.json",
+        "sha256": "afa39f8a2c659fc7adbce50af3a09bcc7f9a77fb11e27175ba152cd96d4a25fd"
+      },
+      {
+        "initialized_at": "2026-01-14T00:00:00+00:00",
+        "usable_after_at": "2026-01-14T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20260114T0000Z",
+        "file": "ecmwf_ifs_20260114T0000Z.json",
+        "sha256": "295f934bf4b3844c786df7cf69268c5ceab1e0fbb282cdb76b7f5e5207923d3f"
+      },
+      {
+        "initialized_at": "2026-01-15T00:00:00+00:00",
+        "usable_after_at": "2026-01-15T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20260115T0000Z",
+        "file": "ecmwf_ifs_20260115T0000Z.json",
+        "sha256": "20a2dcfef3ea5e1bf79557ad6d822c841bcb9e642e1f2983ae20abf738340e6c"
+      },
+      {
+        "initialized_at": "2026-01-16T00:00:00+00:00",
+        "usable_after_at": "2026-01-16T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20260116T0000Z",
+        "file": "ecmwf_ifs_20260116T0000Z.json",
+        "sha256": "a6535c06c046e2389aa0c3a57674573a866f8706ee44e8a5ddd831eaed8af58a"
+      },
+      {
+        "initialized_at": "2026-01-17T00:00:00+00:00",
+        "usable_after_at": "2026-01-17T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20260117T0000Z",
+        "file": "ecmwf_ifs_20260117T0000Z.json",
+        "sha256": "905f74365dd145437b2072a545dc59cf24fba7dc7cf14f20a9d43a4a052346af"
+      },
+      {
+        "initialized_at": "2026-01-18T00:00:00+00:00",
+        "usable_after_at": "2026-01-18T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20260118T0000Z",
+        "file": "ecmwf_ifs_20260118T0000Z.json",
+        "sha256": "9e6b1a79e8c98f72ab7004cef4847534b784480ec0a508ff558f77497163aec2"
+      },
+      {
+        "initialized_at": "2026-01-19T00:00:00+00:00",
+        "usable_after_at": "2026-01-19T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20260119T0000Z",
+        "file": "ecmwf_ifs_20260119T0000Z.json",
+        "sha256": "a8c62f979582558526cf4969f23d49c0c4c23fb1dd0d0167ad12ab119f801312"
+      },
+      {
+        "initialized_at": "2026-01-20T00:00:00+00:00",
+        "usable_after_at": "2026-01-20T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20260120T0000Z",
+        "file": "ecmwf_ifs_20260120T0000Z.json",
+        "sha256": "6455713eb1416abddf9d9bd739f5933b87c4074d6878b19b02848c2549aeefd5"
+      },
+      {
+        "initialized_at": "2026-01-21T00:00:00+00:00",
+        "usable_after_at": "2026-01-21T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20260121T0000Z",
+        "file": "ecmwf_ifs_20260121T0000Z.json",
+        "sha256": "761cb51333f3c05bc2427c389b3cad0c69a64f500ddf31bc028548a92ad16925"
+      },
+      {
+        "initialized_at": "2026-01-22T00:00:00+00:00",
+        "usable_after_at": "2026-01-22T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20260122T0000Z",
+        "file": "ecmwf_ifs_20260122T0000Z.json",
+        "sha256": "ee6f0672f961d92bac0de7ffead82c75ee6b9bcc2dadb15646e76a98ee7e9002"
+      },
+      {
+        "initialized_at": "2026-01-23T00:00:00+00:00",
+        "usable_after_at": "2026-01-23T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20260123T0000Z",
+        "file": "ecmwf_ifs_20260123T0000Z.json",
+        "sha256": "13cd003415864add2f55c42c8fab2fef2ed960dd4b3fe915fc1948022e2ff80c"
+      },
+      {
+        "initialized_at": "2026-01-24T00:00:00+00:00",
+        "usable_after_at": "2026-01-24T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20260124T0000Z",
+        "file": "ecmwf_ifs_20260124T0000Z.json",
+        "sha256": "3a628b0d18d1355f322a6638cdbca77beabd6a591cc2879d651a7ea241cb5a00"
+      },
+      {
+        "initialized_at": "2026-01-25T00:00:00+00:00",
+        "usable_after_at": "2026-01-25T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20260125T0000Z",
+        "file": "ecmwf_ifs_20260125T0000Z.json",
+        "sha256": "46be8f4416c93def6d107196c2d44f46d1e1a179cac144f6a90437288d5a7be0"
+      },
+      {
+        "initialized_at": "2026-01-26T00:00:00+00:00",
+        "usable_after_at": "2026-01-26T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20260126T0000Z",
+        "file": "ecmwf_ifs_20260126T0000Z.json",
+        "sha256": "ecbc02738d8dd90040813394e9888317ed1fceb94c4d7cc38f72f191ef997426"
+      },
+      {
+        "initialized_at": "2026-01-27T00:00:00+00:00",
+        "usable_after_at": "2026-01-27T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20260127T0000Z",
+        "file": "ecmwf_ifs_20260127T0000Z.json",
+        "sha256": "37c26f13fba86c407b1f2f163d92c442c373284b84b004645d5517539587f4a7"
+      },
+      {
+        "initialized_at": "2026-01-28T00:00:00+00:00",
+        "usable_after_at": "2026-01-28T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20260128T0000Z",
+        "file": "ecmwf_ifs_20260128T0000Z.json",
+        "sha256": "b590ae728fcb9f0d3f77d619cbdc64f50297598d5ee02cf583bf998b403ed574"
+      },
+      {
+        "initialized_at": "2026-01-29T00:00:00+00:00",
+        "usable_after_at": "2026-01-29T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20260129T0000Z",
+        "file": "ecmwf_ifs_20260129T0000Z.json",
+        "sha256": "281a85ec4a8f935e5d0f5a3b25a36428064bd71800348376c8632ef2648bde2f"
+      },
+      {
+        "initialized_at": "2026-01-30T00:00:00+00:00",
+        "usable_after_at": "2026-01-30T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20260130T0000Z",
+        "file": "ecmwf_ifs_20260130T0000Z.json",
+        "sha256": "53285d478f256ff5597248d864afcbf95d6f38b5d2b42325a605e91b1f10f827"
+      },
+      {
+        "initialized_at": "2026-01-31T00:00:00+00:00",
+        "usable_after_at": "2026-01-31T12:00:00+00:00",
+        "weather_run_id": "ecmwf_ifs_20260131T0000Z",
+        "file": "ecmwf_ifs_20260131T0000Z.json",
+        "sha256": "bd7e1b7576658e6697c8d0fef8b1f29eeb29762e2c651668386edd9ca56611fe"
+      }
+    ],
+    "matched_launch_lead_pairs": 8708,
+    "missing_power_pairs_excluded": 124,
+    "target_source": "data/raw/turbine_1.csv and turbine_2.csv; complete hourly means only",
+    "baseline_wind_exactly_matches_extended_archive": true,
+    "baseline_report_sha256": "32a425dbc8225b641ac53f3a7e787557d739b2dc74dc9082ae32a86f4315bc0a",
+    "code_sha256": {
+      "experiment_features.py": "c9f01d7a168852a3c20fc4bcad0865596009b0fc832754cc4d653304ada627d7",
+      "feature_weather.py": "f6d08d9a06ce78711ff53f943373efd311926161f1adf4ea98a3bab0c986a922",
+      "baseline.py": "57dbac669d00a515345ce8cf74fc3703a146390a1e889e003a905fc2516a0311",
+      "hourly.py": "991a4062aae6b2abfa7744036299b4d522c27cc54a09b7133dbb94f1713076f7",
+      "dataset.py": "b8c56fc7c01e7adabdbadd36e8bd5ce14a3a55ae11f4a90e4a1ccb5223d9bedf",
+      "time_alignment.py": "49dcdc4baba17d27e65b004f0cf1857051f4f7c0b846cdb2b095f187aee18fb6"
+    }
+  },
+  "feature_groups": {
+    "wind": [
+      "wind_speed_100m"
+    ],
+    "weather": [
+      "wind_speed_100m",
+      "direction_sin",
+      "direction_cos",
+      "wind_speed_10m",
+      "temperature_2m",
+      "surface_pressure"
+    ],
+    "derived": [
+      "wind_speed_100m",
+      "direction_sin",
+      "direction_cos",
+      "wind_speed_10m",
+      "temperature_2m",
+      "surface_pressure",
+      "wind_shear",
+      "air_density_proxy",
+      "wind_mean_3h",
+      "wind_ramp_3h",
+      "target_hour_sin",
+      "target_hour_cos",
+      "forecast_lead_hours"
+    ],
+    "wind_context": [
+      "wind_speed_100m",
+      "wind_mean_3h",
+      "wind_ramp_3h",
+      "target_hour_sin",
+      "target_hour_cos",
+      "forecast_lead_hours"
+    ]
+  },
+  "model_config": {
+    "learning_rate": 0.05,
+    "max_iter": 120,
+    "max_leaf_nodes": 7,
+    "min_samples_leaf": 30,
+    "l2_regularization": 1.0,
+    "early_stopping": false,
+    "random_state": 42
+  },
+  "software": {
+    "scikit_learn": "1.7.2",
+    "numpy": "2.5.3",
+    "scipy": "1.18.1"
+  },
+  "selection_rule": "minimum pooled December MAE; no January tuning",
+  "selection_candidates": [
+    "baseline",
+    "hgb_wind_squared_error",
+    "hgb_wind_absolute_error",
+    "hgb_weather_squared_error",
+    "hgb_weather_absolute_error",
+    "hgb_derived_squared_error",
+    "hgb_derived_absolute_error"
+  ],
+  "diagnostic_only_models": [
+    "hgb_wind_context_squared_error",
+    "hgb_wind_context_absolute_error"
+  ],
+  "selected_on_december": "hgb_derived_squared_error",
+  "summary": {
+    "2025-12": {
+      "baseline": {
+        "n": 4296,
+        "mae": 0.3277574405859807,
+        "rmse": 0.3765884086623113,
+        "bias": -0.04050274725328166
+      },
+      "hgb_wind_squared_error": {
+        "n": 4296,
+        "mae": 0.32671671001735153,
+        "rmse": 0.3811864718578082,
+        "bias": -0.02460731447661619
+      },
+      "hgb_wind_absolute_error": {
+        "n": 4296,
+        "mae": 0.3283103578173333,
+        "rmse": 0.43414224873210944,
+        "bias": -0.08963496571594858
+      },
+      "hgb_weather_squared_error": {
+        "n": 4296,
+        "mae": 0.3035529935993947,
+        "rmse": 0.36582730941546415,
+        "bias": 0.00281945495518837
+      },
+      "hgb_weather_absolute_error": {
+        "n": 4296,
+        "mae": 0.3063885742937045,
+        "rmse": 0.37659983484692044,
+        "bias": -0.006540397232000981
+      },
+      "hgb_derived_squared_error": {
+        "n": 4296,
+        "mae": 0.2699849156809918,
+        "rmse": 0.3383886448482958,
+        "bias": 0.013682529028993652
+      },
+      "hgb_derived_absolute_error": {
+        "n": 4296,
+        "mae": 0.2713921173117314,
+        "rmse": 0.35230660426394583,
+        "bias": -0.005033095242574796
+      },
+      "hgb_wind_context_squared_error": {
+        "n": 4296,
+        "mae": 0.2784351463604099,
+        "rmse": 0.3531057503800873,
+        "bias": -0.04132206239277771
+      },
+      "hgb_wind_context_absolute_error": {
+        "n": 4296,
+        "mae": 0.2777832073690345,
+        "rmse": 0.3732217210597552,
+        "bias": -0.07452288575855905
+      }
+    },
+    "2026-01": {
+      "baseline": {
+        "n": 4338,
+        "mae": 0.2885182415764612,
+        "rmse": 0.32405051795142953,
+        "bias": 0.08438739562588574
+      },
+      "hgb_wind_squared_error": {
+        "n": 4338,
+        "mae": 0.28479173106484756,
+        "rmse": 0.32186643456579794,
+        "bias": 0.08334542150876183
+      },
+      "hgb_wind_absolute_error": {
+        "n": 4338,
+        "mae": 0.23973962347800482,
+        "rmse": 0.3160203054012027,
+        "bias": -0.0348776906509574
+      },
+      "hgb_weather_squared_error": {
+        "n": 4338,
+        "mae": 0.30120156186136127,
+        "rmse": 0.3431895525984755,
+        "bias": 0.14246679591301878
+      },
+      "hgb_weather_absolute_error": {
+        "n": 4338,
+        "mae": 0.27166482344390824,
+        "rmse": 0.3303963389837428,
+        "bias": 0.08819916155033448
+      },
+      "hgb_derived_squared_error": {
+        "n": 4338,
+        "mae": 0.24368543992961555,
+        "rmse": 0.28957134885245833,
+        "bias": 0.10236134564478701
+      },
+      "hgb_derived_absolute_error": {
+        "n": 4338,
+        "mae": 0.20631497847977173,
+        "rmse": 0.2684279941859218,
+        "bias": 0.04821491562159265
+      },
+      "hgb_wind_context_squared_error": {
+        "n": 4338,
+        "mae": 0.2209690512131668,
+        "rmse": 0.2706739870722193,
+        "bias": 0.050139423935041456
+      },
+      "hgb_wind_context_absolute_error": {
+        "n": 4338,
+        "mae": 0.1966920009719548,
+        "rmse": 0.2712087008368328,
+        "bias": -0.006774661919273658
+      }
+    }
+  },
+  "details": [
+    {
+      "period": "2025-12",
+      "turbine": "turbine_1",
+      "horizon_hours": 24,
+      "training_count": 707,
+      "training_cutoff_exclusive": "2025-12-01T00:00:00+00:00",
+      "last_training_target": "2025-11-30T23:00:00+00:00",
+      "results": {
+        "baseline": {
+          "n": 727,
+          "mae": 0.32862206331344584,
+          "rmse": 0.377279091400457,
+          "bias": -0.04282010560098713
+        },
+        "hgb_wind_squared_error": {
+          "n": 727,
+          "mae": 0.3275572308018841,
+          "rmse": 0.3825062551899263,
+          "bias": -0.02673155674802654
+        },
+        "hgb_wind_absolute_error": {
+          "n": 727,
+          "mae": 0.32523220563262967,
+          "rmse": 0.4310311542729657,
+          "bias": -0.08647138477074122
+        },
+        "hgb_weather_squared_error": {
+          "n": 727,
+          "mae": 0.30607828262414577,
+          "rmse": 0.37092638526694305,
+          "bias": -0.0047361077101332584
+        },
+        "hgb_weather_absolute_error": {
+          "n": 727,
+          "mae": 0.30740231906622134,
+          "rmse": 0.3804497589045576,
+          "bias": -0.010412145127165047
+        },
+        "hgb_derived_squared_error": {
+          "n": 727,
+          "mae": 0.27058192013168064,
+          "rmse": 0.33831332360226934,
+          "bias": 0.01818428051860464
+        },
+        "hgb_derived_absolute_error": {
+          "n": 727,
+          "mae": 0.2718807719094383,
+          "rmse": 0.35039438656051985,
+          "bias": -0.003549215040742626
+        },
+        "hgb_wind_context_squared_error": {
+          "n": 727,
+          "mae": 0.27864762610546456,
+          "rmse": 0.3518114739434522,
+          "bias": -0.03906295066584004
+        },
+        "hgb_wind_context_absolute_error": {
+          "n": 727,
+          "mae": 0.27712890804707097,
+          "rmse": 0.36936434526409523,
+          "bias": -0.07044353494837124
+        }
+      }
+    },
+    {
+      "period": "2025-12",
+      "turbine": "turbine_1",
+      "horizon_hours": 48,
+      "training_count": 707,
+      "training_cutoff_exclusive": "2025-12-01T00:00:00+00:00",
+      "last_training_target": "2025-11-30T23:00:00+00:00",
+      "results": {
+        "baseline": {
+          "n": 1430,
+          "mae": 0.3288564158451496,
+          "rmse": 0.3776721420814684,
+          "bias": -0.04092177341824329
+        },
+        "hgb_wind_squared_error": {
+          "n": 1430,
+          "mae": 0.32645952064225225,
+          "rmse": 0.38112093077822623,
+          "bias": -0.024734048388597593
+        },
+        "hgb_wind_absolute_error": {
+          "n": 1430,
+          "mae": 0.32763379497473755,
+          "rmse": 0.43273016796610425,
+          "bias": -0.08516965711621761
+        },
+        "hgb_weather_squared_error": {
+          "n": 1430,
+          "mae": 0.30202619482726145,
+          "rmse": 0.3648616281104846,
+          "bias": 0.005328497747978527
+        },
+        "hgb_weather_absolute_error": {
+          "n": 1430,
+          "mae": 0.3037372522736258,
+          "rmse": 0.3758084250611958,
+          "bias": -0.003098623470061954
+        },
+        "hgb_derived_squared_error": {
+          "n": 1430,
+          "mae": 0.2710387335253005,
+          "rmse": 0.33934830632960766,
+          "bias": 0.012731572030223359
+        },
+        "hgb_derived_absolute_error": {
+          "n": 1430,
+          "mae": 0.27104400733004397,
+          "rmse": 0.3515650053551442,
+          "bias": -0.008547002080235367
+        },
+        "hgb_wind_context_squared_error": {
+          "n": 1430,
+          "mae": 0.2774898440269532,
+          "rmse": 0.3522877965743574,
+          "bias": -0.041181214562528795
+        },
+        "hgb_wind_context_absolute_error": {
+          "n": 1430,
+          "mae": 0.27591740519312336,
+          "rmse": 0.37303312486625717,
+          "bias": -0.07640240975003519
+        }
+      }
+    },
+    {
+      "period": "2025-12",
+      "turbine": "turbine_2",
+      "horizon_hours": 24,
+      "training_count": 707,
+      "training_cutoff_exclusive": "2025-12-01T00:00:00+00:00",
+      "last_training_target": "2025-11-30T23:00:00+00:00",
+      "results": {
+        "baseline": {
+          "n": 721,
+          "mae": 0.32701426591537525,
+          "rmse": 0.3756075260785291,
+          "bias": -0.04092113033037472
+        },
+        "hgb_wind_squared_error": {
+          "n": 721,
+          "mae": 0.32773330029982917,
+          "rmse": 0.38193946682797364,
+          "bias": -0.02568564889758064
+        },
+        "hgb_wind_absolute_error": {
+          "n": 721,
+          "mae": 0.3287022221136966,
+          "rmse": 0.43520007792766535,
+          "bias": -0.09528356379439779
+        },
+        "hgb_weather_squared_error": {
+          "n": 721,
+          "mae": 0.3052539321796174,
+          "rmse": 0.3676200525651871,
+          "bias": -0.0035891484033599317
+        },
+        "hgb_weather_absolute_error": {
+          "n": 721,
+          "mae": 0.3091569464109379,
+          "rmse": 0.3781024802452078,
+          "bias": -0.013499306363129493
+        },
+        "hgb_derived_squared_error": {
+          "n": 721,
+          "mae": 0.2687057767191829,
+          "rmse": 0.33709088087262407,
+          "bias": 0.014863338119760894
+        },
+        "hgb_derived_absolute_error": {
+          "n": 721,
+          "mae": 0.27141547713763076,
+          "rmse": 0.3523577745294565,
+          "bias": 0.0005374820636727545
+        },
+        "hgb_wind_context_squared_error": {
+          "n": 721,
+          "mae": 0.279103553851364,
+          "rmse": 0.3533090951943453,
+          "bias": -0.039847547343548305
+        },
+        "hgb_wind_context_absolute_error": {
+          "n": 721,
+          "mae": 0.28073486089719735,
+          "rmse": 0.3735075300661843,
+          "bias": -0.07078875777450822
+        }
+      }
+    },
+    {
+      "period": "2025-12",
+      "turbine": "turbine_2",
+      "horizon_hours": 48,
+      "training_count": 707,
+      "training_cutoff_exclusive": "2025-12-01T00:00:00+00:00",
+      "last_training_target": "2025-11-30T23:00:00+00:00",
+      "results": {
+        "baseline": {
+          "n": 1418,
+          "mae": 0.32658375482718516,
+          "rmse": 0.37563638711885544,
+          "bias": -0.038679347300347174
+        },
+        "hgb_wind_squared_error": {
+          "n": 1418,
+          "mae": 0.32602824781874107,
+          "rmse": 0.38019019571839896,
+          "bias": -0.02284212918538622
+        },
+        "hgb_wind_absolute_error": {
+          "n": 1418,
+          "mae": 0.330371547764804,
+          "rmse": 0.43660776491334535,
+          "bias": -0.09288791030707631
+        },
+        "hgb_weather_squared_error": {
+          "n": 1418,
+          "mae": 0.30293314903438484,
+          "rmse": 0.3632444988966506,
+          "bias": 0.007421405509146215
+        },
+        "hgb_weather_absolute_error": {
+          "n": 1418,
+          "mae": 0.30713497890764485,
+          "rmse": 0.3746425319882754,
+          "bias": -0.004487930572089044
+        },
+        "hgb_derived_squared_error": {
+          "n": 1418,
+          "mae": 0.26926649356424437,
+          "rmse": 0.33811659204055333,
+          "bias": 0.011733115644544535
+        },
+        "hgb_derived_absolute_error": {
+          "n": 1418,
+          "mae": 0.2714807653701281,
+          "rmse": 0.3540013175900558,
+          "bias": -0.005082658265622649
+        },
+        "hgb_wind_context_squared_error": {
+          "n": 1418,
+          "mae": 0.2789396511285414,
+          "rmse": 0.3544859021389636,
+          "bias": -0.043372070836525285
+        },
+        "hgb_wind_context_absolute_error": {
+          "n": 1418,
+          "mae": 0.2784994489239111,
+          "rmse": 0.37522852442338145,
+          "bias": -0.0766175789938879
+        }
+      }
+    },
+    {
+      "period": "2026-01",
+      "turbine": "turbine_1",
+      "horizon_hours": 24,
+      "training_count": 1447,
+      "training_cutoff_exclusive": "2026-01-01T00:00:00+00:00",
+      "last_training_target": "2025-12-31T23:00:00+00:00",
+      "results": {
+        "baseline": {
+          "n": 731,
+          "mae": 0.28439057847022114,
+          "rmse": 0.31876790398591504,
+          "bias": 0.08605645862985381
+        },
+        "hgb_wind_squared_error": {
+          "n": 731,
+          "mae": 0.28156151354661857,
+          "rmse": 0.31765646373819967,
+          "bias": 0.08484775734393406
+        },
+        "hgb_wind_absolute_error": {
+          "n": 731,
+          "mae": 0.23472732351903153,
+          "rmse": 0.30605196994410355,
+          "bias": -0.03153385763673321
+        },
+        "hgb_weather_squared_error": {
+          "n": 731,
+          "mae": 0.2997064201535033,
+          "rmse": 0.3423189453633708,
+          "bias": 0.14899303032196362
+        },
+        "hgb_weather_absolute_error": {
+          "n": 731,
+          "mae": 0.2746698145335368,
+          "rmse": 0.332537992639773,
+          "bias": 0.10404447076151473
+        },
+        "hgb_derived_squared_error": {
+          "n": 731,
+          "mae": 0.24154031403193776,
+          "rmse": 0.28669941611179567,
+          "bias": 0.11606657275148402
+        },
+        "hgb_derived_absolute_error": {
+          "n": 731,
+          "mae": 0.19915067538270875,
+          "rmse": 0.2590924559780865,
+          "bias": 0.05057023553221376
+        },
+        "hgb_wind_context_squared_error": {
+          "n": 731,
+          "mae": 0.21587741519045414,
+          "rmse": 0.26281286555859346,
+          "bias": 0.05767007096993556
+        },
+        "hgb_wind_context_absolute_error": {
+          "n": 731,
+          "mae": 0.19137368718563608,
+          "rmse": 0.2616794979196668,
+          "bias": -0.0024126381257978955
+        }
+      }
+    },
+    {
+      "period": "2026-01",
+      "turbine": "turbine_1",
+      "horizon_hours": 48,
+      "training_count": 1447,
+      "training_cutoff_exclusive": "2026-01-01T00:00:00+00:00",
+      "last_training_target": "2025-12-31T23:00:00+00:00",
+      "results": {
+        "baseline": {
+          "n": 1438,
+          "mae": 0.28893738984104056,
+          "rmse": 0.3248176537859136,
+          "bias": 0.08590079092497513
+        },
+        "hgb_wind_squared_error": {
+          "n": 1438,
+          "mae": 0.28451039144812706,
+          "rmse": 0.32222891273162235,
+          "bias": 0.0846134876073656
+        },
+        "hgb_wind_absolute_error": {
+          "n": 1438,
+          "mae": 0.24097156927924918,
+          "rmse": 0.31501493138034226,
+          "bias": -0.030353414232651532
+        },
+        "hgb_weather_squared_error": {
+          "n": 1438,
+          "mae": 0.3017957543827744,
+          "rmse": 0.34416047323220916,
+          "bias": 0.14622309825468108
+        },
+        "hgb_weather_absolute_error": {
+          "n": 1438,
+          "mae": 0.27918290899973147,
+          "rmse": 0.33718441209363137,
+          "bias": 0.09932378001276673
+        },
+        "hgb_derived_squared_error": {
+          "n": 1438,
+          "mae": 0.2439850206074549,
+          "rmse": 0.29076809912266,
+          "bias": 0.10286825872258451
+        },
+        "hgb_derived_absolute_error": {
+          "n": 1438,
+          "mae": 0.20701832616432592,
+          "rmse": 0.26899003183520276,
+          "bias": 0.04621962872014673
+        },
+        "hgb_wind_context_squared_error": {
+          "n": 1438,
+          "mae": 0.22071520053034116,
+          "rmse": 0.27029639789330023,
+          "bias": 0.048847566504802445
+        },
+        "hgb_wind_context_absolute_error": {
+          "n": 1438,
+          "mae": 0.1987433219463769,
+          "rmse": 0.2725560944366408,
+          "bias": -0.0080134564561218
+        }
+      }
+    },
+    {
+      "period": "2026-01",
+      "turbine": "turbine_2",
+      "horizon_hours": 24,
+      "training_count": 1441,
+      "training_cutoff_exclusive": "2026-01-01T00:00:00+00:00",
+      "last_training_target": "2025-12-31T23:00:00+00:00",
+      "results": {
+        "baseline": {
+          "n": 731,
+          "mae": 0.2865072311190091,
+          "rmse": 0.32132188797399786,
+          "bias": 0.08304755762845092
+        },
+        "hgb_wind_squared_error": {
+          "n": 731,
+          "mae": 0.2836950051947708,
+          "rmse": 0.31972369909350296,
+          "bias": 0.0825327438753298
+        },
+        "hgb_wind_absolute_error": {
+          "n": 731,
+          "mae": 0.23595419532373144,
+          "rmse": 0.3135751737523125,
+          "bias": -0.03981577949877888
+        },
+        "hgb_weather_squared_error": {
+          "n": 731,
+          "mae": 0.2998208455375513,
+          "rmse": 0.3411711030936036,
+          "bias": 0.13964212409168836
+        },
+        "hgb_weather_absolute_error": {
+          "n": 731,
+          "mae": 0.2622477523112341,
+          "rmse": 0.32120848867212076,
+          "bias": 0.07710365471692303
+        },
+        "hgb_derived_squared_error": {
+          "n": 731,
+          "mae": 0.24336552351583285,
+          "rmse": 0.2872127160804158,
+          "bias": 0.10822140523928352
+        },
+        "hgb_derived_absolute_error": {
+          "n": 731,
+          "mae": 0.20422210533916133,
+          "rmse": 0.26488961516665704,
+          "bias": 0.054138838069244244
+        },
+        "hgb_wind_context_squared_error": {
+          "n": 731,
+          "mae": 0.21960745669260642,
+          "rmse": 0.2682422914653217,
+          "bias": 0.05608101220599107
+        },
+        "hgb_wind_context_absolute_error": {
+          "n": 731,
+          "mae": 0.1925388817419596,
+          "rmse": 0.26612206877563704,
+          "bias": -0.001141898657885887
+        }
+      }
+    },
+    {
+      "period": "2026-01",
+      "turbine": "turbine_2",
+      "horizon_hours": 48,
+      "training_count": 1441,
+      "training_cutoff_exclusive": "2026-01-01T00:00:00+00:00",
+      "last_training_target": "2025-12-31T23:00:00+00:00",
+      "results": {
+        "baseline": {
+          "n": 1438,
+          "mae": 0.29121965685503837,
+          "rmse": 0.32731081990392286,
+          "bias": 0.0827066404660343
+        },
+        "hgb_wind_squared_error": {
+          "n": 1438,
+          "mae": 0.2872726503873063,
+          "rmse": 0.32470299727009977,
+          "bias": 0.08172677116434993
+        },
+        "hgb_wind_absolute_error": {
+          "n": 1438,
+          "mae": 0.24297995810150544,
+          "rmse": 0.32316882268577063,
+          "bias": -0.038591535209486064
+        },
+        "hgb_weather_squared_error": {
+          "n": 1438,
+          "mae": 0.30206929717106723,
+          "rmse": 0.34368196387593014,
+          "bias": 0.13682882302090715
+        },
+        "hgb_weather_absolute_error": {
+          "n": 1438,
+          "mae": 0.2674062862270741,
+          "rmse": 0.3270348630898635,
+          "bias": 0.0746600051615121
+        },
+        "hgb_derived_squared_error": {
+          "n": 1438,
+          "mae": 0.2446389509970319,
+          "rmse": 0.29101533392200135,
+          "bias": 0.09190851839552049
+        },
+        "hgb_derived_absolute_error": {
+          "n": 1438,
+          "mae": 0.21031746934162868,
+          "rmse": 0.2742521944365116,
+          "bias": 0.04600149169974416
+        },
+        "hgb_wind_context_squared_error": {
+          "n": 1438,
+          "mae": 0.22450336888287184,
+          "rmse": 0.27616434842632404,
+          "bias": 0.044582738939291766
+        },
+        "hgb_wind_context_absolute_error": {
+          "n": 1438,
+          "mae": 0.19945543488969233,
+          "rmse": 0.27711420019757055,
+          "bias": -0.01061666664327756
+        }
+      }
+    }
+  ],
+  "limitations": [
+    "January was already used for project evaluation and is not a new untouched holdout.",
+    "Pooled horizons share target hours; samples are not independent.",
+    "February actual power is unavailable; no February accuracy claim.",
+    "No future observed wind, temperature or power used as predictors.",
+    "Experiment only; production runner still uses the baseline."
+  ]
+}

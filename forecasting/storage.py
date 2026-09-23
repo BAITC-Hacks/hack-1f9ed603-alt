@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import os
 import tempfile
+import time
 from pathlib import Path
 
 
@@ -20,7 +21,16 @@ def write_json(path: Path, value: object, *, indent: int | None = 2) -> None:
             stream.write(text)
             stream.flush()
             os.fsync(stream.fileno())
-        os.replace(temporary, path)
+        # Windows may temporarily deny replacement while another reader holds the
+        # destination open. Keep atomic publication and bound the retry window.
+        for attempt in range(6):
+            try:
+                os.replace(temporary, path)
+                break
+            except PermissionError:
+                if os.name != "nt" or attempt == 5:
+                    raise
+                time.sleep(0.01 * (2 ** attempt))
     finally:
         if temporary is not None:
             temporary.unlink(missing_ok=True)

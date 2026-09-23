@@ -4,6 +4,7 @@ import copy
 import csv
 import io
 import json
+import os
 import tempfile
 import unittest
 from concurrent.futures import ThreadPoolExecutor
@@ -127,6 +128,26 @@ class ValidationTests(unittest.TestCase):
             self.assertTrue(all(run == results[0] for run in results))
             self.assertEqual(fetch_run(INITIALIZED, Path(temp)), results[0])
             self.assertEqual(len(list(Path(temp).iterdir())), 1)
+
+    @unittest.skipUnless(os.name == 'nt', 'Windows file-sharing retry')
+    def test_atomic_replacement_retries_windows_reader_lock(self):
+        from forecasting.storage import os as storage_os
+        original_replace = storage_os.replace
+        calls = 0
+        def transient_lock(source, destination):
+            nonlocal calls
+            calls += 1
+            if calls == 1:
+                raise PermissionError('Transient reader lock')
+            return original_replace(source, destination)
+        with tempfile.TemporaryDirectory() as temp:
+            path = Path(temp) / 'cache.json'
+            write_json(path, {'old': True})
+            with patch('forecasting.storage.os.replace', side_effect=transient_lock):
+                write_json(path, {'new': True})
+            self.assertEqual(json.loads(path.read_text()), {'new': True})
+            self.assertEqual(calls, 2)
+            self.assertEqual(list(Path(temp).iterdir()), [path])
 
 
 if __name__ == "__main__":
