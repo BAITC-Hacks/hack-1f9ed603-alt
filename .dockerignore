@@ -5,3 +5,4 @@ frontend/dist/
 *.tsbuildinfo
 .git/
 .env
+data/

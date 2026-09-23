@@ -5,8 +5,11 @@ services:
       dockerfile: backend/Dockerfile
     environment:
       DATA_DIR: /app/data/raw
+      RUNS_DB_PATH: /app/state/runs.sqlite3
     volumes:
       - ./data/raw:/app/data/raw:ro
+      - ./data/weather/ecmwf_ifs:/app/data/weather/ecmwf_ifs
+      - runs_data:/app/state
     ports:
       - "8000:8000"
 
@@ -20,3 +23,6 @@ services:
       - backend
     ports:
       - "5173:5173"
+
+volumes:
+  runs_data:

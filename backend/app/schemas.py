@@ -27,7 +27,10 @@ class ForecastRunRequest(BaseModel):
     @field_validator("issued_at")
     @classmethod
     def validate_issued_at(cls, value: datetime) -> datetime:
-        return require_aware_utc(value)
+        issued_at = require_aware_utc(value)
+        if issued_at.minute or issued_at.second or issued_at.microsecond:
+            raise ValueError("Время запуска должно приходиться на начало часа по UTC")
+        return issued_at
 
 
 class ForecastPoint(BaseModel):

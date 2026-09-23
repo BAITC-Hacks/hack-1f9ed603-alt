@@ -11,6 +11,8 @@ from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
 
+from pydantic import ValidationError
+
 from backend.app.db import save_run
 from backend.app.forecast_service import EngineNotReady, InvalidForecast, run_forecast
 from backend.app.schemas import ForecastRunRequest
@@ -74,6 +76,20 @@ class ForecastServiceTests(unittest.TestCase):
         with patch("backend.app.forecast_service.importlib.util.find_spec", return_value=None):
             with self.assertRaises(EngineNotReady):
                 run_forecast(self.request)
+
+    def test_request_requires_utc_hour_boundary(self) -> None:
+        with self.assertRaisesRegex(ValidationError, "начало часа"):
+            ForecastRunRequest(
+                turbine_id="turbine_1",
+                issued_at="2026-02-01T12:30:00Z",
+                horizon_hours=24,
+            )
+        request = ForecastRunRequest(
+            turbine_id="turbine_1",
+            issued_at="2026-02-01T17:30:00+05:30",
+            horizon_hours=24,
+        )
+        self.assertEqual(request.issued_at.isoformat(), "2026-02-01T12:00:00+00:00")
 
 
 if __name__ == "__main__":
