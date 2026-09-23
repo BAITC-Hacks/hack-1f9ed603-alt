@@ -14,6 +14,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, field_validator
 
+from backend.app.schemas import ForecastRunResponse
 from forecasting.dataset import TURBINE_IDS, TurbineSummary, summarize_turbine
 
 LOGGER = logging.getLogger(__name__)
@@ -58,7 +59,7 @@ def health() -> dict[str, str]:
 
 
 @app.get("/api/turbines")
-def turbines() -> dict[str, list[dict[str, str | int]]]:
+def turbines() -> dict[str, list[dict[str, str | int | float]]]:
     try:
         summaries = load_summaries()
     except (OSError, ValueError) as exc:
@@ -67,7 +68,7 @@ def turbines() -> dict[str, list[dict[str, str | int]]]:
     return {"turbines": [summary.to_dict() for summary in summaries]}
 
 
-@app.post("/api/forecast-runs")
-def create_forecast_run(request: ForecastRunRequest) -> None:
+@app.post("/api/forecast-runs", response_model=ForecastRunResponse, status_code=201)
+def create_forecast_run(request: ForecastRunRequest) -> ForecastRunResponse:
     del request
     raise HTTPException(status_code=501, detail="Прогнозная модель пока не подключена")

@@ -7,6 +7,8 @@ from dataclasses import asdict, dataclass
 from datetime import datetime
 from pathlib import Path
 
+from forecasting.sites import SITES
+
 TURBINE_IDS = ("turbine_1", "turbine_2")
 STEP_SECONDS = 600
 
@@ -14,13 +16,15 @@ STEP_SECONDS = 600
 @dataclass(frozen=True)
 class TurbineSummary:
     id: str
+    latitude: float
+    longitude: float
     rows: int
     first_observation: str
     last_observation: str
     expected_rows: int
     missing_intervals: int
 
-    def to_dict(self) -> dict[str, str | int]:
+    def to_dict(self) -> dict[str, str | int | float]:
         return asdict(self)
 
 
@@ -51,6 +55,8 @@ def summarize_turbine(data_dir: Path, turbine_id: str) -> TurbineSummary:
         raise ValueError(f"CSV пуст: {path.name}")
     return TurbineSummary(
         id=turbine_id,
+        latitude=SITES[turbine_id].latitude,
+        longitude=SITES[turbine_id].longitude,
         rows=count,
         first_observation=first.isoformat(),
         last_observation=previous.isoformat(),

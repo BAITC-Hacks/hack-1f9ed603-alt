@@ -1,5 +1,7 @@
 export type TurbineSummary = {
   id: "turbine_1" | "turbine_2";
+  latitude: number;
+  longitude: number;
   rows: number;
   first_observation: string;
   last_observation: string;
@@ -13,6 +15,26 @@ export type ForecastRunRequest = {
   turbine_id: TurbineSummary["id"];
   issued_at: string;
   horizon_hours: 24 | 48;
+};
+
+export type ForecastPoint = {
+  time: string;
+  normalized_power: number;
+};
+
+export type ForecastRunResponse = {
+  run_id: string;
+  status: "completed";
+  turbine_id: TurbineSummary["id"];
+  issued_at: string;
+  horizon_hours: 24 | 48;
+  unit: "normalized_power";
+  input_data_cutoff_at: string;
+  weather_source: string;
+  weather_run_id: string;
+  weather_run_issued_at: string;
+  model_version: string;
+  points: ForecastPoint[];
 };
 
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
@@ -36,7 +58,7 @@ export function getTurbines(): Promise<TurbinesResponse> {
   return request("/api/turbines");
 }
 
-export function createForecastRun(payload: ForecastRunRequest): Promise<unknown> {
+export function createForecastRun(payload: ForecastRunRequest): Promise<ForecastRunResponse> {
   return request("/api/forecast-runs", {
     method: "POST",
     body: JSON.stringify(payload),
