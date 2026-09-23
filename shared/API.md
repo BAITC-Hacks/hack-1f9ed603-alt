@@ -19,7 +19,7 @@
 
 Географическое местное время в этом регионе изменилось с UTC+6 на UTC+5 1 марта 2024 года ([сообщение правительства Казахстана](https://www.gov.kz/memleket/entities/mti/press/news/details/688998?lang=ru)). При этом ряды CSV идут без повторённого часа в этот переход. Это **не доказывает**, в каком поясе записаны данные, и делает простое присвоение местного пояса опасным. До выяснения вопроса нельзя надёжно соединять историю турбин с почасовой погодой по абсолютному времени.
 
-Все **новые** моменты в API (`issued_at`, `input_data_cutoff_at`, `weather_run_issued_at`, `points[].time`) — ISO 8601 со смещением. Бэкенд принимает явное смещение или `Z`, а в ответе возвращает UTC с `Z`. Только `first_observation` и `last_observation` сохраняют исходные метки CSV без пояса.
+Все моменты в API (`issued_at`, `input_data_cutoff_at`, `weather_run_issued_at`, `weather_run_initialized_at`, `weather_run_usable_after_at`, `weather_actual_publication_at`, `points[].time`) — ISO 8601 со смещением, кроме `weather_actual_publication_at`, которое может быть `null`. Бэкенд принимает явное смещение или `Z`, а в ответе возвращает UTC с `Z`. Только `first_observation` и `last_observation` сохраняют исходные метки CSV без пояса.
 
 ## GET /api/health
 
@@ -90,6 +90,9 @@
   "weather_source": "example_archive",
   "weather_run_id": "example-20260130T1800Z",
   "weather_run_issued_at": "2026-01-30T18:00:00Z",
+  "weather_run_initialized_at": "2026-01-30T18:00:00Z",
+  "weather_run_usable_after_at": "2026-01-31T00:00:00Z",
+  "weather_actual_publication_at": null,
   "model_version": "example-model-v1",
   "points": [
     {"time": "2026-01-31T01:00:00Z", "normalized_power": 0.31},
@@ -120,7 +123,9 @@
 }
 ```
 
-`points` содержит ровно `horizon_hours` элементов с шагом один час, по возрастанию. Первый `time = issued_at + 1 час`. Каждая точка — средняя нормализованная активная мощность за предшествующий час `(time - 1 час, time]`, число от 0 до 1. Это **не кВт·ч**. `input_data_cutoff_at` и `weather_run_issued_at` не могут быть позже `issued_at`. `weather_run_id` должен позволять воспроизвести источник погоды.
+`points` содержит ровно `horizon_hours` элементов с шагом один час, по возрастанию. Первый `time = issued_at + 1 час`. Каждая точка — средняя нормализованная активная мощность за предшествующий час `(time - 1 час, time]`, число от 0 до 1. Это **не кВт·ч**. `input_data_cutoff_at` не может быть позже `issued_at`. `weather_run_id` должен позволять воспроизвести источник погоды.
+
+`weather_run_initialized_at` — время инициализации погодной модели, а `weather_run_usable_after_at` — расчётный порог доступности: инициализация плюс консервативные 12 часов. Оба времени не позже `issued_at`. Архив Open-Meteo не содержит точного исторического времени публикации, поэтому `weather_actual_publication_at` равен `null`; время инициализации не следует выдавать за подтверждённую публикацию. Устаревающее поле `weather_run_issued_at` оставлено для совместимости и равно `weather_run_initialized_at`; новые клиенты должны использовать явное имя.
 
 ## Ошибки и текущее состояние
 

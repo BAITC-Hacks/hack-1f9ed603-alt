@@ -87,14 +87,16 @@ function ForecastResult({ run }: { run: ForecastRunResponse }) {
       <h3>Источник и параметры запуска</h3>
       <dl className="metadata-grid">
         <div><dt>Источник погоды</dt><dd>{run.weather_source}</dd></div>
-        <div><dt>Время погодного цикла</dt><dd><time dateTime={run.weather_run_issued_at}>{formatUtcTime(run.weather_run_issued_at)}</time></dd></div>
+        <div><dt>Инициализация погодной модели</dt><dd><time dateTime={run.weather_run_initialized_at}>{formatUtcTime(run.weather_run_initialized_at)}</time></dd></div>
+        <div><dt>Считается доступным после</dt><dd><time dateTime={run.weather_run_usable_after_at}>{formatUtcTime(run.weather_run_usable_after_at)}</time></dd></div>
+        <div><dt>Фактическая публикация</dt><dd>{run.weather_actual_publication_at ? formatUtcTime(run.weather_actual_publication_at) : "Неизвестна"}</dd></div>
         <div><dt>ID погодного выпуска</dt><dd className="code-value">{run.weather_run_id}</dd></div>
         <div><dt>Время запуска</dt><dd><time dateTime={run.issued_at}>{formatUtcTime(run.issued_at)}</time></dd></div>
         <div><dt>Данные доступны до</dt><dd><time dateTime={run.input_data_cutoff_at}>{formatUtcTime(run.input_data_cutoff_at)}</time></dd></div>
         <div><dt>Версия модели</dt><dd className="code-value">{run.model_version}</dd></div>
         <div><dt>ID расчёта</dt><dd className="code-value">{run.run_id}</dd></div>
       </dl>
-      <p className="result-note">Время погодного цикла не подтверждает точное время публикации архивного прогноза.</p>
+      <p className="result-note">Порог доступности рассчитан как 12 часов после инициализации модели. Архив не сообщает точное время публикации выпуска.</p>
 
       <h3>Почасовые значения</h3>
       <div className="table-wrap">

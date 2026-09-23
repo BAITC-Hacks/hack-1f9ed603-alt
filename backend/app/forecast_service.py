@@ -30,7 +30,9 @@ def run_forecast(request: ForecastRunRequest) -> ForecastRunResponse:
 
     Runner принимает turbine_id, issued_at (UTC) и horizon_hours.
     Он возвращает mapping с input_data_cutoff_at, weather_source,
-    weather_run_id, weather_run_issued_at, model_version и points.
+    weather_run_id, weather_run_issued_at, weather_run_initialized_at,
+    weather_run_usable_after_at, weather_actual_publication_at,
+    model_version и points.
     Идентификатор запуска и неизменяемые поля ответа добавляет backend.
     """
     if importlib.util.find_spec("forecasting.runner") is None:

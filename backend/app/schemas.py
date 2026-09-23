@@ -58,13 +58,16 @@ class ForecastRunResponse(BaseModel):
     weather_source: str = Field(min_length=1)
     weather_run_id: str = Field(min_length=1)
     weather_run_issued_at: datetime
+    weather_run_initialized_at: datetime
+    weather_run_usable_after_at: datetime
+    weather_actual_publication_at: datetime | None
     model_version: str = Field(min_length=1)
     points: list[ForecastPoint]
 
-    @field_validator("issued_at", "input_data_cutoff_at", "weather_run_issued_at")
+    @field_validator("issued_at", "input_data_cutoff_at", "weather_run_issued_at", "weather_run_initialized_at", "weather_run_usable_after_at", "weather_actual_publication_at")
     @classmethod
-    def validate_timestamp(cls, value: datetime) -> datetime:
-        return require_aware_utc(value)
+    def validate_timestamp(cls, value: datetime | None) -> datetime | None:
+        return require_aware_utc(value) if value is not None else None
 
     @model_validator(mode="after")
     def validate_history_and_horizon(self) -> ForecastRunResponse:
@@ -72,6 +75,12 @@ class ForecastRunResponse(BaseModel):
             raise ValueError("Исторические данные получены после момента прогноза")
         if self.weather_run_issued_at > self.issued_at:
             raise ValueError("Погодный прогноз выпущен после момента прогноза")
+        if self.weather_run_issued_at != self.weather_run_initialized_at:
+            raise ValueError("Время погодного цикла не совпадает с инициализацией модели")
+        if not self.weather_run_initialized_at <= self.weather_run_usable_after_at <= self.issued_at:
+            raise ValueError("Погодный выпуск не был доступен к моменту прогноза")
+        if self.weather_actual_publication_at is not None and not self.weather_run_initialized_at <= self.weather_actual_publication_at <= self.issued_at:
+            raise ValueError("Фактическая публикация погоды вне временных границ прогноза")
         if len(self.points) != self.horizon_hours:
             raise ValueError("Неверное число почасовых точек")
         for index, point in enumerate(self.points, start=1):
@@ -79,6 +88,6 @@ class ForecastRunResponse(BaseModel):
                 raise ValueError("Почасовые точки не соответствуют горизонту")
         return self
 
-    @field_serializer("issued_at", "input_data_cutoff_at", "weather_run_issued_at")
-    def serialize_timestamp(self, value: datetime) -> str:
-        return utc_string(value)
+    @field_serializer("issued_at", "input_data_cutoff_at", "weather_run_issued_at", "weather_run_initialized_at", "weather_run_usable_after_at", "weather_actual_publication_at")
+    def serialize_timestamp(self, value: datetime | None) -> str | None:
+        return utc_string(value) if value is not None else None

@@ -33,6 +33,9 @@ export type ForecastRunResponse = {
   weather_source: string;
   weather_run_id: string;
   weather_run_issued_at: string;
+  weather_run_initialized_at: string;
+  weather_run_usable_after_at: string;
+  weather_actual_publication_at: string | null;
   model_version: string;
   points: ForecastPoint[];
 };
@@ -78,9 +81,19 @@ function isForecastRunResponse(value: unknown, payload: ForecastRunRequest): val
 
   const issuedAt = parseZonedTime(value.issued_at);
   const weatherIssuedAt = parseZonedTime(value.weather_run_issued_at);
+  const weatherInitializedAt = parseZonedTime(value.weather_run_initialized_at);
+  const weatherUsableAfterAt = parseZonedTime(value.weather_run_usable_after_at);
+  const weatherPublicationAt = value.weather_actual_publication_at === null
+    ? null : parseZonedTime(value.weather_actual_publication_at);
   const inputCutoffAt = parseZonedTime(value.input_data_cutoff_at);
-  if (!Number.isFinite(issuedAt) || !Number.isFinite(weatherIssuedAt) || !Number.isFinite(inputCutoffAt) ||
-      issuedAt !== Date.parse(payload.issued_at) || weatherIssuedAt > issuedAt || inputCutoffAt > issuedAt) return false;
+  if (!Number.isFinite(issuedAt) || !Number.isFinite(weatherIssuedAt) ||
+      !Number.isFinite(weatherInitializedAt) || !Number.isFinite(weatherUsableAfterAt) ||
+      !Number.isFinite(inputCutoffAt) ||
+      issuedAt !== Date.parse(payload.issued_at) || weatherIssuedAt !== weatherInitializedAt ||
+      weatherInitializedAt > weatherUsableAfterAt || weatherUsableAfterAt > issuedAt ||
+      (weatherPublicationAt !== null && (!Number.isFinite(weatherPublicationAt) ||
+        weatherPublicationAt < weatherInitializedAt || weatherPublicationAt > issuedAt)) ||
+      inputCutoffAt > issuedAt) return false;
 
   return value.points.every((point, index) =>
     isRecord(point) && typeof point.normalized_power === "number" &&

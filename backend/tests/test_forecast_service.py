@@ -33,6 +33,9 @@ class ForecastServiceTests(unittest.TestCase):
             "weather_source": "test_archive",
             "weather_run_id": "test_run",
             "weather_run_issued_at": self.issued_at - timedelta(hours=6),
+            "weather_run_initialized_at": self.issued_at - timedelta(hours=6),
+            "weather_run_usable_after_at": self.issued_at,
+            "weather_actual_publication_at": None,
             "model_version": "test_model",
             "points": [
                 {"time": self.issued_at + timedelta(hours=index), "normalized_power": 0.5}
@@ -50,6 +53,9 @@ class ForecastServiceTests(unittest.TestCase):
         result = self.run_with_payload(self.payload())
         body = result.model_dump(mode="json")
         self.assertEqual(body["issued_at"], "2026-01-31T00:00:00Z")
+        self.assertEqual(body["weather_run_initialized_at"], "2026-01-30T18:00:00Z")
+        self.assertEqual(body["weather_run_usable_after_at"], "2026-01-31T00:00:00Z")
+        self.assertIsNone(body["weather_actual_publication_at"])
         self.assertEqual(len(body["points"]), 24)
         with tempfile.TemporaryDirectory() as directory:
             database = Path(directory) / "runs.sqlite3"
@@ -63,6 +69,18 @@ class ForecastServiceTests(unittest.TestCase):
     def test_future_weather_is_rejected(self) -> None:
         payload = self.payload()
         payload["weather_run_issued_at"] = self.issued_at + timedelta(hours=1)
+        with self.assertRaises(InvalidForecast):
+            self.run_with_payload(payload)
+
+    def test_future_usability_is_rejected(self) -> None:
+        payload = self.payload()
+        payload["weather_run_usable_after_at"] = self.issued_at + timedelta(hours=1)
+        with self.assertRaises(InvalidForecast):
+            self.run_with_payload(payload)
+
+    def test_issued_at_must_match_initialization(self) -> None:
+        payload = self.payload()
+        payload["weather_run_issued_at"] = self.issued_at - timedelta(hours=7)
         with self.assertRaises(InvalidForecast):
             self.run_with_payload(payload)
 

@@ -20,7 +20,7 @@ def run_forecast(
     ...
 ```
 
-Функция возвращает словарь с полями `input_data_cutoff_at`, `weather_source`, `weather_run_id`, `weather_run_issued_at`, `model_version` и `points`. Каждая точка содержит `time` и `normalized_power`. Все времена должны быть с часовым поясом; `points` — ровно 24 или 48 последовательных часов после `issued_at`. Backend сам назначает `run_id`, проверяет границы и сериализует UTC как `Z`. `issued_at` в API должен соответствовать началу часа по UTC, иначе ответ 422. Формат внешнего API — `shared/API.md`.
+Функция возвращает словарь с полями `input_data_cutoff_at`, `weather_source`, `weather_run_id`, `weather_run_initialized_at`, `weather_run_usable_after_at`, `weather_actual_publication_at`, `weather_run_issued_at`, `model_version` и `points`. `weather_run_issued_at` — прежнее имя времени инициализации, сохранённое для совместимости; фактическая публикация в архиве неизвестна (`null`). Каждая точка содержит `time` и `normalized_power`. Все ненулевые времена должны быть с часовым поясом; `points` — ровно 24 или 48 последовательных часов после `issued_at`. Backend сам назначает `run_id`, проверяет границы и сериализует UTC как `Z`. `issued_at` в API должен соответствовать началу часа по UTC, иначе ответ 422. Формат внешнего API — `shared/API.md`.
 
 Если источник временно недоступен, функция может бросить `ConnectionError`, `TimeoutError` или `OSError`: API вернёт 503. Некорректный результат не сохраняется и даст 502. Если модуль ядра отсутствует, API возвращает 501. Не возвращайте заготовленный прогноз вместо ошибки.
 
