@@ -18,7 +18,7 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; }
 .app-header { max-width: 1600px; margin-inline: auto; height: 86px; padding-inline: 48px; display: flex; align-items: center; justify-content: space-between; gap: 24px; border-bottom: 1px solid var(--line); }
 .brand { display: flex; align-items: center; gap: 12px; font-size: 20px; font-weight: 600; letter-spacing: -.8px; }
 .brand-symbol { display: grid; place-items: center; width: 36px; height: 36px; border: 1px solid #625238; border-radius: 10px; color: var(--accent); background: #e8bb7408; }
-.brand-ai { color: var(--muted); font-weight: 400; }
+.brand-suffix { color: var(--muted); font-weight: 400; }
 .brand-divider { height: 22px; width: 1px; background: var(--line); margin-inline: 10px; }
 .brand-context { font-size: 12px; font-weight: 400; letter-spacing: 0; color: var(--muted); }
 .header-tools { display: flex; gap: 24px; align-items: center; }

@@ -40,7 +40,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     document.documentElement.lang = language;
-    document.title = messages["Прогноз выработки ВЭС"][language];
+    document.title = "ALT Energy";
     document.querySelector('meta[name="description"]')?.setAttribute("content", messages["Почасовой прогноз нормализованной мощности двух турбин на 24 и 48 часов с источником архивной погоды."][language]);
     try {
       localStorage.setItem(storageKey, language);

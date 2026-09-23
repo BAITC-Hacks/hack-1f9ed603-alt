@@ -43,7 +43,7 @@ function DataDialog({ turbines, open, onClose }: { turbines: TurbineSummary[]; o
   }, [open]);
   return (
     <dialog className="data-dialog" ref={dialog} onClose={onClose} onClick={(event) => { if (event.target === event.currentTarget) onClose(); }} aria-labelledby="data-title">
-      <div className="dialog-header"><div><p className="eyebrow">HackAlem AI</p><h2 id="data-title">{t("Исходные данные")}</h2></div><button className="icon-button" type="button" onClick={onClose} aria-label={t("Закрыть")}><X size={20} /></button></div>
+      <div className="dialog-header"><div><p className="eyebrow">ALT Energy</p><h2 id="data-title">{t("Исходные данные")}</h2></div><button className="icon-button" type="button" onClick={onClose} aria-label={t("Закрыть")}><X size={20} /></button></div>
       <div className="source-cards">
         {turbines.map((turbine) => (
           <article className="source-card" key={turbine.id}>
@@ -124,7 +124,7 @@ export function App() {
     <div className="app-shell">
       <a className="skip-link" href="#forecast-title">{t("Перейти к запуску прогноза")}</a>
       <header className="app-header">
-        <div className="brand"><span className="brand-symbol"><Wind size={24} aria-hidden="true" /></span><span>HackAlem<span className="brand-ai"> AI</span></span><span className="brand-divider" /><span className="brand-context">{t("Энергия ветра")}</span></div>
+        <div className="brand"><span className="brand-symbol"><Wind size={24} aria-hidden="true" /></span><span>ALT<span className="brand-suffix"> Energy</span></span><span className="brand-divider" /><span className="brand-context">{t("Энергия ветра")}</span></div>
         <div className="header-tools"><button type="button" className="data-button" aria-label={t("Данные")} onClick={() => setDataOpen(true)} disabled={loadState !== "ready" || !turbines.length}><Database size={16} aria-hidden="true" /><span>{t("Данные")}</span></button><LanguageSwitcher /></div>
       </header>
 
@@ -183,7 +183,7 @@ export function App() {
             )}
           </section>
         </div>
-        <footer className="workspace-footer"><span>HackAlem AI <span className="footer-separator">/</span> {t("Прогноз мощности")}</span><span>{t("Реальные данные. Проверяемый результат.")}</span></footer>
+        <footer className="workspace-footer"><span>ALT Energy <span className="footer-separator">/</span> {t("Прогноз мощности")}</span><span>{t("Реальные данные. Проверяемый результат.")}</span></footer>
       </main>
       <DataDialog turbines={turbines} open={dataOpen} onClose={() => setDataOpen(false)} />
     </div>
