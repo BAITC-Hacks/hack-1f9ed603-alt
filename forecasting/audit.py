@@ -19,6 +19,7 @@ from forecasting.baseline import BIN_WIDTH_MS, PowerCurve
 from forecasting.replay_february import launches
 from forecasting.storage import write_json
 from forecasting.weather import SAFE_DELAY, fetch_run, select_run
+from forecasting.time_alignment import time_alignment_metadata
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -33,9 +34,13 @@ def audit(root: Path = ROOT) -> dict[str, object]:
     backtest_path = root / "data/processed/backtest_report.json"
     manifest = json.loads(manifest_path.read_text())
     backtest = json.loads(backtest_path.read_text())
+    if any(report.get("time_alignment") != time_alignment_metadata() for report in (manifest, backtest)):
+        raise ValueError("Отчёты используют устаревшее правило сопоставления времени CSV")
     models = {}
     for path in sorted((root / "forecasting/artifacts").glob("baseline*.json")):
         artifact = json.loads(path.read_text())
+        if artifact.get("time_alignment") != time_alignment_metadata():
+            raise ValueError("Артефакт использует устаревшее правило сопоставления времени CSV")
         models[artifact["model_version"]] = artifact
     expected = {(site, issued, horizon) for site, issued, horizon in launches()}
     seen = set()
@@ -114,6 +119,7 @@ def audit(root: Path = ROOT) -> dict[str, object]:
             "mae_skill_vs_persistence": 1 - result["model_mae_on_persistence_points"] / result["persistence_mae"],
         })
     return {
+        "time_alignment": time_alignment_metadata(),
         "replay_sha256": hashlib.sha256(manifest_path.read_bytes()).hexdigest(),
         "backtest_sha256": hashlib.sha256(backtest_path.read_bytes()).hexdigest(),
         "validated_launches": len(seen),
@@ -134,7 +140,8 @@ def audit(root: Path = ROOT) -> dict[str, object]:
             "Large hourly power changes accompany large wind changes in the archived forecast; they are retained and flagged, not treated as verified turbine behavior.",
             "Both turbines share the weather grid cell, so similar forecast profiles are expected.",
             "The 48-hour distributions count launch/lead pairs; successive launches overlap in valid time.",
-            "CSV offset +05:00, hourly timestamp alignment, and 12-hour weather usability remain explicit assumptions.",
+            "Source clock labels are matched to the weather/API axis without a timezone shift per user instruction; source timezone is unspecified.",
+            "Hourly interval labeling and the 12-hour weather usability delay remain explicit assumptions.",
         ],
     }
 

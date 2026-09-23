@@ -9,14 +9,14 @@ Weather data: ECMWF IFS via Open-Meteo, [CC BY 4.0 attribution terms](https://op
 Run from the repository root with Python 3.11+:
 
 ```bash
-python -m forecasting.train_baseline --csv-utc-offset +05:00
+python -m forecasting.train_baseline
 python -m unittest discover -s forecasting/tests -v
 python -m forecasting.forecast turbine_1 2026-02-01T12:00:00Z 48
 python -m forecasting.replay_february
 python -m forecasting.audit
 ```
 
-The `+05:00` offset is an explicit working assumption supplied by the user. The CSV itself does not declare a timezone, and the organizers have not confirmed it. Never silently infer the offset from the turbine coordinates.
+Source clock labels are used as provided, per the user’s correction. No timezone offset is added or subtracted. For joining to weather and the API time axis, the source calendar date and clock hour are matched directly to the same UTC-axis labels. This is an explicit alignment convention, not confirmation that the source timezone is UTC. Artifacts and reports record `time_alignment.policy=as_provided_no_shift`, zero clock shift, and an unspecified source timezone. Models from the previous shifted policy are rejected; `--csv-utc-offset` has been removed.
 
 The training command writes:
 
@@ -33,7 +33,7 @@ The model is trained on archived **forecast wind at 100 m**, matched to observed
 
 ## Time and weather provenance
 
-The ten-minute CSV timestamp has an unknown interval convention. The implementation groups labels `HH:00` through `HH:50` into an hour ending at `HH+1:00`; this is an explicit approximation. It neither fills gaps nor treats partial hours as complete.
+The ten-minute CSV timestamp has an unknown interval convention. The implementation groups labels `HH:00` through `HH:50` into an hour ending at `HH+1:00`; this is an explicit approximation. It neither fills gaps nor treats partial hours as complete. The one-hour difference between a group’s start and its end label represents the interval boundary; it is not a timezone conversion.
 
 Open-Meteo's `run` parameter is the **model initialization time**, not the exact time the forecast appeared on its API. The archive does not expose historical publication timestamps. [Open-Meteo documents a typical 4–6 hour computation delay](https://open-meteo.com/en/docs/single-runs-api), and [ECMWF publishes a dissemination schedule](https://confluence.ecmwf.int/pages/viewpage.action?pageId=621039623). This baseline conservatively allows a run only 12 hours after initialization. `weather_run_issued_at` in the public result is the nominal ECMWF cycle time, **not a verified API publication timestamp**. The historical-launch manifest stores `weather_run_usable_after_at` separately and leaves `weather_actual_publication_at` null. If exact publication times become available, replace the conservative rule and populate that field.
 
@@ -41,11 +41,11 @@ The height of wind measurements in the turbine CSV is unknown. The 100 m forecas
 
 ## Result realism and validation
 
-December/January chronological MAE is 0.192–0.250 (19.2–25.0 percentage points of normalized power), 27–40% lower than a constant training-mean forecast and 34–50% lower than repeating the last day on matching points. January bias is positive, about 0.064–0.072: the baseline overpredicts mean power in that month. These are retrospective validation results, not February accuracy estimates.
+With unchanged source clock labels, December/January chronological MAE is 0.284–0.329 (28.4–32.9 percentage points of normalized power), 4–11% lower than a constant training-mean forecast and 12–26% lower than repeating the last day on matching points. January bias is positive, about 0.083–0.086. Previous MAE 0.192–0.250 and related improvement claims were measured with the removed five-hour shift and do not apply to this version. These comparisons do not establish the source timezone.
 
-The February 48-hour forecasts range from 0.055 to 0.867. Both turbines use the same weather grid cell, so similar profiles are expected. Sparse wind bins are shrunk toward the training mean; this can underestimate peaks and create decreases at high forecast wind speeds. The curve is a statistical mapping from forecast grid wind to observed power, not a manufacturer power curve. No turbine cut-in/cut-out speeds or ramp limits are supplied, so these must not be invented.
+The February 48-hour forecasts range from 0.219 to 0.781, with a maximum hourly change of about 0.453. Both turbines use the same weather grid cell, so similar profiles are expected. Sparse wind bins are shrunk toward the training mean; peaks and shutdowns are not resolved reliably. The curve maps forecast grid wind to observed power statistically and does not specify a manufacturer's physical power curve or turbine cut-in/cut-out speeds.
 
-The audit flags large ramps instead of silently smoothing them: the largest power change is about 0.777 in one hour, corresponding to archived forecast wind changing from 2.20 to 9.36 m/s on 26 February at 06:00 UTC. A fresh download of the 25 February weather run matched the cached data. Six of 1,392 launch/lead pairs per turbine in the 48-hour replay fall beyond the trained wind bins and use the nearest fitted bin. Actual February power is unavailable, so these events cannot be verified against turbine behavior.
+Six of 1,392 launch/lead pairs per turbine in the 48-hour replay fall beyond the trained wind bins and use the nearest fitted bin. Actual February power is unavailable, so these predictions cannot be validated against turbine behavior.
 
 Malformed weather, non-finite/negative wind, duplicate or shifted weather timestamps, wrong units, invalid power curves, and inconsistent training cutoffs are rejected. Weather responses are validated before caching. JSON caches, model artifacts, and manifests are replaced atomically, so concurrent readers see a complete file. Failed runs never become placeholder forecasts.
 

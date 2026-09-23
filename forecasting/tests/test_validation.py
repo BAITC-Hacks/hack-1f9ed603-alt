@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import copy
-import argparse
 import csv
 import io
 import json
@@ -18,7 +17,7 @@ from forecasting.dataset import FIELDS, summarize_turbine
 from forecasting.forecast import ForecastUnavailable, forecast
 from forecasting.hourly import load_hourly
 from forecasting.storage import write_json
-from forecasting.train_baseline import parse_offset
+from forecasting.time_alignment import source_hour_end_on_forecast_axis
 from forecasting.weather import fetch_run
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -66,13 +65,12 @@ class ValidationTests(unittest.TestCase):
                     forecast("turbine_1", ISSUED, 24, weather_cache=Path(temp))
             self.assertFalse((Path(temp) / CACHE_NAME).exists())
 
-    def test_csv_offset_requires_an_explicit_valid_offset(self):
-        for value in ("+-1:00", "-+1:00", "+05:-1", "+14:30", "+25:00", "UTC"):
-            with self.subTest(offset=value), self.assertRaises(argparse.ArgumentTypeError):
-                parse_offset(value)
+    def test_source_alignment_rejects_implicit_timezone_conversion(self):
+        with self.assertRaises(ValueError):
+            source_hour_end_on_forecast_axis(ISSUED)
 
     def test_corrupt_models_are_explicitly_unavailable(self):
-        for problem in ("root", "curve", "empty", "nan", "out_of_range", "naive", "count", "version", "cutoff"):
+        for problem in ("root", "curve", "empty", "nan", "out_of_range", "naive", "count", "version", "cutoff", "time_policy"):
             with self.subTest(problem=problem), tempfile.TemporaryDirectory() as temp:
                 artifact = copy.deepcopy(self.model)
                 curve = artifact["curves"]["turbine_1"]
@@ -85,6 +83,7 @@ class ValidationTests(unittest.TestCase):
                 elif problem == "count": curve["training_count"] = 2.5
                 elif problem == "version": del artifact["model_version"]
                 elif problem == "cutoff": artifact["training_cutoff_exclusive"] = curve["trained_through"]
+                elif problem == "time_policy": artifact["time_alignment"]["source_clock_shift_hours"] = -5
                 path = Path(temp) / "model.json"
                 path.write_text(json.dumps(artifact))
                 with self.assertRaises(ForecastUnavailable):

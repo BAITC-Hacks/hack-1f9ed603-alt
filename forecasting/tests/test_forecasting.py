@@ -12,8 +12,9 @@ from forecasting.baseline import MODEL_VERSION, Example, PowerCurve, fit_curve, 
 from forecasting.forecast import ForecastUnavailable, forecast
 from forecasting.hourly import FIELDS, load_hourly
 from forecasting.replay_february import launches, replay
-from forecasting.train_baseline import build_examples, build_model_artifact, parse_offset, power_by_utc_end
+from forecasting.train_baseline import build_examples, build_model_artifact, power_by_hour_end
 from forecasting.weather import SOURCE, WeatherRun, fetch_run, select_run
+from forecasting.time_alignment import time_alignment_metadata
 
 UTC = timezone.utc
 
@@ -42,12 +43,31 @@ class HourlyTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "диапазона"):
                 load_hourly(Path(temp), "turbine_1")
 
-    def test_explicit_offset_sets_hour_end(self):
+    def test_source_clock_is_preserved_when_labeling_hour_end(self):
         from forecasting.hourly import HourlyObservation
 
         row = HourlyObservation(datetime(2025, 1, 1, 0), 6, 5, 0.4, 12)
-        result = power_by_utc_end([row], parse_offset("+05:00"))
-        self.assertEqual(result, {datetime(2024, 12, 31, 20, tzinfo=UTC): 0.4})
+        result = power_by_hour_end([row])
+        self.assertEqual(result, {datetime(2025, 1, 1, 1, tzinfo=UTC): 0.4})
+        self.assertEqual(row.hour_start_local, datetime(2025, 1, 1, 0))
+        self.assertIsNone(row.hour_start_local.tzinfo)
+
+    def test_weather_is_joined_to_the_same_source_clock_hour(self):
+        from forecasting.hourly import HourlyObservation
+
+        row = HourlyObservation(datetime(2026, 1, 1, 13), 6, 5, 0.4, 12)
+        incomplete = HourlyObservation(datetime(2026, 1, 1, 14), 5, 5, 0.9, 12)
+        power = {site: power_by_hour_end([row, incomplete]) for site in ("turbine_1", "turbine_2")}
+        initialized = datetime(2026, 1, 1, tzinfo=UTC)
+        issued = initialized + timedelta(hours=12)
+        end = initialized + timedelta(hours=14)
+        run = WeatherRun(initialized, issued,
+                         {site: {end: 5.0} for site in power}, {})
+        examples = build_examples(run, issued, power, 24)
+        self.assertEqual(len(examples), 2)
+        for example in examples:
+            self.assertEqual(example.target_end_at, end)
+            self.assertEqual(example.normalized_power, 0.4)
 
 
 class WeatherTests(unittest.TestCase):
@@ -108,6 +128,7 @@ class BaselineTests(unittest.TestCase):
             curve = PowerCurve(0.3, {8: 0.4}, 12, issue - timedelta(hours=1))
             model.write_text(json.dumps({
                 "model_version": MODEL_VERSION, "weather_source": SOURCE,
+                "time_alignment": time_alignment_metadata(),
                 "training_cutoff_exclusive": issue.isoformat(),
                 "curves": {"turbine_1": curve.to_dict()},
             }))
@@ -128,6 +149,7 @@ class BaselineTests(unittest.TestCase):
             curve = PowerCurve(0.3, {8: 0.4}, 12, issue + timedelta(hours=1))
             model.write_text(json.dumps({
                 "model_version": MODEL_VERSION, "weather_source": SOURCE,
+                "time_alignment": time_alignment_metadata(),
                 "training_cutoff_exclusive": issue.isoformat(),
                 "curves": {"turbine_1": curve.to_dict()},
             }))
@@ -142,7 +164,10 @@ class BaselineTests(unittest.TestCase):
                 Example(turbine_id, issue - timedelta(days=1), issue - timedelta(hours=1), 4, 0.2),
                 Example(turbine_id, issue - timedelta(hours=1), issue, 4, 1.0),
             ])
-        artifact = build_model_artifact(examples, issue, parse_offset("+05:00"), "pre-test")
+        artifact = build_model_artifact(examples, issue, "pre-test")
+        self.assertEqual(artifact["time_alignment"]["source_clock_shift_hours"], 0)
+        self.assertIsNone(artifact["time_alignment"]["source_timezone"])
+        self.assertNotIn("csv_utc_offset_assumption", artifact)
         for curve in artifact["curves"].values():
             self.assertEqual(curve["training_count"], 1)
             self.assertEqual(curve["mean_power"], 0.2)
@@ -160,6 +185,7 @@ class BaselineTests(unittest.TestCase):
                 curve = PowerCurve(value, {8: value}, 12, cutoff)
                 (directory / f"baseline_{name}.json").write_text(json.dumps({
                     "model_family": MODEL_VERSION, "model_version": name, "weather_source": SOURCE,
+                    "time_alignment": time_alignment_metadata(),
                     "training_cutoff_exclusive": training_cutoff.isoformat(),
                     "curves": {"turbine_1": curve.to_dict()},
                 }))

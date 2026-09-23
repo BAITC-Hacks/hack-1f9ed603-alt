@@ -11,6 +11,7 @@ from forecasting.dataset import TURBINE_IDS
 from forecasting.forecast import ForecastUnavailable, forecast
 from forecasting.weather import SAFE_DELAY, SOURCE, select_run
 from forecasting.storage import write_json
+from forecasting.time_alignment import time_alignment_metadata
 
 ROOT = Path(__file__).resolve().parents[1]
 UTC = timezone.utc
@@ -70,6 +71,7 @@ def replay(
             )
         records.append(record)
     manifest = {
+        "time_alignment": time_alignment_metadata(),
         "start_date": start.isoformat(),
         "end_date": end.isoformat(),
         "launch_hour_utc": 12,

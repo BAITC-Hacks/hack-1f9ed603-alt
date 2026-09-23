@@ -11,6 +11,7 @@ from uuid import uuid4
 from forecasting.baseline import MODEL_VERSION, PowerCurve
 from forecasting.dataset import TURBINE_IDS
 from forecasting.weather import SOURCE, fetch_run, select_run
+from forecasting.time_alignment import time_alignment_metadata
 
 ROOT = Path(__file__).resolve().parents[1]
 UTC = timezone.utc
@@ -55,6 +56,8 @@ def forecast(
         if (artifact.get("model_family", artifact.get("model_version")) != MODEL_VERSION
                 or artifact.get("weather_source") != SOURCE):
             raise ForecastUnavailable("Версия обученной модели несовместима с погодным источником")
+        if artifact.get("time_alignment") != time_alignment_metadata():
+            raise ForecastUnavailable("Модель обучена с другим правилом сопоставления времени CSV")
         try:
             curve = PowerCurve.from_dict(artifact["curves"][turbine_id])
             training_cutoff = datetime.fromisoformat(artifact["training_cutoff_exclusive"])

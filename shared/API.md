@@ -15,9 +15,9 @@
 
 ## Время
 
-`Статистическое время` в CSV не имеет смещения UTC и в условии не указан его часовой пояс. **Часовой пояс наблюдений не установлен.** Эти значения остаются локальными метками без смещения до письменного подтверждения от поставщика данных/организаторов. Нельзя автоматически считать их ни UTC, ни `Asia/Almaty`.
+`Статистическое время` в CSV используется как предоставлено, без преобразования в другой часовой пояс. По уточнению пользователя прежний сдвиг на пять часов удалён. Исходные метки остаются без смещения, часовой пояс источника не объявляется подтверждённым.
 
-Географическое местное время в этом регионе изменилось с UTC+6 на UTC+5 1 марта 2024 года ([сообщение правительства Казахстана](https://www.gov.kz/memleket/entities/mti/press/news/details/688998?lang=ru)). При этом ряды CSV идут без повторённого часа в этот переход. Это **не доказывает**, в каком поясе записаны данные, и делает простое присвоение местного пояса опасным. До выяснения вопроса нельзя надёжно соединять историю турбин с почасовой погодой по абсолютному времени.
+Для расчётов календарные даты и часы CSV сопоставляются напрямую с такими же метками погодной оси UTC. В `input_data_cutoff_at` отражается метка последнего использованного часового значения на этой оси. Это явно заданное правило сопоставления (`time_alignment.policy = as_provided_no_shift` в моделях и манифестах), а не вывод о часовом поясе источника. Группа наблюдений `HH:00`–`HH:50` по-прежнему обозначает час, заканчивающийся в `HH+1:00`; это обозначение границы интервала.
 
 Все моменты в API (`issued_at`, `input_data_cutoff_at`, `weather_run_issued_at`, `weather_run_initialized_at`, `weather_run_usable_after_at`, `weather_actual_publication_at`, `points[].time`) — ISO 8601 со смещением, кроме `weather_actual_publication_at`, которое может быть `null`. Бэкенд принимает явное смещение или `Z`, а в ответе возвращает UTC с `Z`. Только `first_observation` и `last_observation` сохраняют исходные метки CSV без пояса.
 
@@ -86,110 +86,110 @@
   "issued_at": "2026-02-01T12:00:00Z",
   "horizon_hours": 24,
   "unit": "normalized_power",
-  "input_data_cutoff_at": "2026-01-31T19:00:00Z",
+  "input_data_cutoff_at": "2026-01-31T23:00:00Z",
   "weather_source": "open_meteo_single_runs_ecmwf_ifs",
   "weather_run_id": "ecmwf_ifs_20260201T0000Z",
   "weather_run_issued_at": "2026-02-01T00:00:00Z",
   "weather_run_initialized_at": "2026-02-01T00:00:00Z",
   "weather_run_usable_after_at": "2026-02-01T12:00:00Z",
   "weather_actual_publication_at": null,
-  "model_version": "ecmwf_ifs_100m_bin_curve_v1_final_20260201T0000Z",
+  "model_version": "ecmwf_ifs_100m_bin_curve_v2_no_shift_final_20260201T0000Z",
   "points": [
     {
       "time": "2026-02-01T13:00:00Z",
-      "normalized_power": 0.371398
+      "normalized_power": 0.329924
     },
     {
       "time": "2026-02-01T14:00:00Z",
-      "normalized_power": 0.47421
+      "normalized_power": 0.362969
     },
     {
       "time": "2026-02-01T15:00:00Z",
-      "normalized_power": 0.371398
+      "normalized_power": 0.329924
     },
     {
       "time": "2026-02-01T16:00:00Z",
-      "normalized_power": 0.371398
+      "normalized_power": 0.329924
     },
     {
       "time": "2026-02-01T17:00:00Z",
-      "normalized_power": 0.371398
+      "normalized_power": 0.329924
     },
     {
       "time": "2026-02-01T18:00:00Z",
-      "normalized_power": 0.371398
+      "normalized_power": 0.329924
     },
     {
       "time": "2026-02-01T19:00:00Z",
-      "normalized_power": 0.370652
+      "normalized_power": 0.371757
     },
     {
       "time": "2026-02-01T20:00:00Z",
-      "normalized_power": 0.370652
+      "normalized_power": 0.371757
     },
     {
       "time": "2026-02-01T21:00:00Z",
-      "normalized_power": 0.370652
+      "normalized_power": 0.371757
     },
     {
       "time": "2026-02-01T22:00:00Z",
-      "normalized_power": 0.371398
+      "normalized_power": 0.329924
     },
     {
       "time": "2026-02-01T23:00:00Z",
-      "normalized_power": 0.528043
+      "normalized_power": 0.447266
     },
     {
       "time": "2026-02-02T00:00:00Z",
-      "normalized_power": 0.528043
+      "normalized_power": 0.447266
     },
     {
       "time": "2026-02-02T01:00:00Z",
-      "normalized_power": 0.528043
+      "normalized_power": 0.447266
     },
     {
       "time": "2026-02-02T02:00:00Z",
-      "normalized_power": 0.47421
+      "normalized_power": 0.362969
     },
     {
       "time": "2026-02-02T03:00:00Z",
-      "normalized_power": 0.47421
+      "normalized_power": 0.362969
     },
     {
       "time": "2026-02-02T04:00:00Z",
-      "normalized_power": 0.637734
+      "normalized_power": 0.493706
     },
     {
       "time": "2026-02-02T05:00:00Z",
-      "normalized_power": 0.528043
+      "normalized_power": 0.447266
     },
     {
       "time": "2026-02-02T06:00:00Z",
-      "normalized_power": 0.514649
+      "normalized_power": 0.454043
     },
     {
       "time": "2026-02-02T07:00:00Z",
-      "normalized_power": 0.686633
+      "normalized_power": 0.498182
     },
     {
       "time": "2026-02-02T08:00:00Z",
-      "normalized_power": 0.771929
+      "normalized_power": 0.496887
     },
     {
       "time": "2026-02-02T09:00:00Z",
-      "normalized_power": 0.771929
+      "normalized_power": 0.496887
     },
     {
       "time": "2026-02-02T10:00:00Z",
-      "normalized_power": 0.686633
+      "normalized_power": 0.498182
     },
     {
       "time": "2026-02-02T11:00:00Z",
-      "normalized_power": 0.637734
+      "normalized_power": 0.493706
     },
     {
       "time": "2026-02-02T12:00:00Z",
-      "normalized_power": 0.528043
+      "normalized_power": 0.447266
     }
   ]
 }

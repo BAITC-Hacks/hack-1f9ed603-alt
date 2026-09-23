@@ -7,7 +7,7 @@ from datetime import datetime
 from math import isfinite
 
 BIN_WIDTH_MS = 0.5
-MODEL_VERSION = "ecmwf_ifs_100m_bin_curve_v1"
+MODEL_VERSION = "ecmwf_ifs_100m_bin_curve_v2_no_shift"
 
 
 def finite_number(value: object, name: str, *, maximum: float | None = None) -> float:

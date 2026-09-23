@@ -12,30 +12,18 @@ from forecasting.dataset import TURBINE_IDS
 from forecasting.hourly import HourlyObservation, load_hourly, write_hourly_csv
 from forecasting.weather import SOURCE, WeatherRun, fetch_run
 from forecasting.storage import write_json
+from forecasting.time_alignment import TIME_POLICY, source_hour_end_on_forecast_axis, time_alignment_metadata
 
 ROOT = Path(__file__).resolve().parents[1]
 UTC = timezone.utc
 
 
-def parse_offset(value: str) -> timezone:
-    if (len(value) != 6 or value[0] not in "+-" or value[3] != ":"
-            or not value[1:3].isdigit() or not value[4:6].isdigit()):
-        raise argparse.ArgumentTypeError("Используйте смещение вида +05:00")
-    try:
-        hours, minutes = int(value[1:3]), int(value[4:6])
-    except ValueError as exc:
-        raise argparse.ArgumentTypeError("Неверное смещение времени") from exc
-    if hours > 14 or minutes > 59 or (hours == 14 and minutes):
-        raise argparse.ArgumentTypeError("Неверное смещение времени")
-    delta = timedelta(hours=hours, minutes=minutes)
-    return timezone(delta if value[0] == "+" else -delta)
-
-
-def power_by_utc_end(rows: list[HourlyObservation], offset: timezone) -> dict[datetime, float]:
+def power_by_hour_end(rows: list[HourlyObservation]) -> dict[datetime, float]:
+    """Match the supplied clock labels without adding or subtracting a timezone offset."""
     result = {}
     for row in rows:
         if row.complete and row.normalized_power is not None:
-            end = (row.hour_start_local + timedelta(hours=1)).replace(tzinfo=offset).astimezone(UTC)
+            end = source_hour_end_on_forecast_axis(row.hour_start_local)
             result[end] = row.normalized_power
     return result
 
@@ -83,7 +71,7 @@ def _days(start: date, end: date):
 
 
 def build_model_artifact(
-    examples: list[Example], cutoff: datetime, offset: timezone, version: str,
+    examples: list[Example], cutoff: datetime, version: str,
 ) -> dict[str, object]:
     curves = {
         turbine_id: fit_curve([item for item in examples if item.turbine_id == turbine_id], cutoff).to_dict()
@@ -93,7 +81,7 @@ def build_model_artifact(
         "model_family": MODEL_VERSION,
         "model_version": version,
         "weather_source": SOURCE,
-        "csv_utc_offset_assumption": offset.utcoffset(None).total_seconds() / 3600,
+        "time_alignment": time_alignment_metadata(),
         "training_cutoff_exclusive": cutoff.isoformat(),
         "hour_label_assumption": "six ten-minute samples HH:00 through HH:50 form hour (HH:00, HH+1:00]",
         "curves": curves,
@@ -102,8 +90,6 @@ def build_model_artifact(
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--csv-utc-offset", required=True, type=parse_offset,
-                        help="Явное рабочее допущение о часовом поясе CSV, например +05:00")
     parser.add_argument("--start", type=date.fromisoformat, default=date(2025, 11, 1))
     parser.add_argument("--end", type=date.fromisoformat, default=date(2026, 1, 31))
     parser.add_argument("--data-dir", type=Path, default=ROOT / "data" / "raw")
@@ -121,7 +107,7 @@ def main() -> None:
     for turbine_id in TURBINE_IDS:
         hourly = load_hourly(args.data_dir, turbine_id)
         write_hourly_csv(hourly, args.output_dir / f"hourly_{turbine_id}.csv")
-        power[turbine_id] = power_by_utc_end(hourly, args.csv_utc_offset)
+        power[turbine_id] = power_by_hour_end(hourly)
         quality[turbine_id] = {
             "hours": len(hourly),
             "complete_hours": sum(row.complete for row in hourly),
@@ -146,6 +132,7 @@ def main() -> None:
                     "turbine_id": turbine_id,
                     "horizon_hours": horizon,
                     "issued_at": issued_at.isoformat(),
+                    "csv_time_policy": TIME_POLICY,
                     "weather_source": SOURCE,
                     "weather_run_id": run.run_id,
                     "weather_run_issued_at": run.initialized_at.isoformat(),
@@ -179,13 +166,14 @@ def main() -> None:
         (args.pre_model_path, datetime(2026, 1, 31, 12, tzinfo=UTC), f"{MODEL_VERSION}_pre_20260131T1200Z"),
         (args.model_path, datetime(2026, 2, 1, tzinfo=UTC), f"{MODEL_VERSION}_final_20260201T0000Z"),
     ):
-        artifact = build_model_artifact(by_horizon[24], cutoff, args.csv_utc_offset, version)
+        artifact = build_model_artifact(by_horizon[24], cutoff, version)
         write_json(path, artifact)
     report = {"model_version": MODEL_VERSION, "quality": quality, "archive_run_count": len(launches) // 4,
+              "time_alignment": time_alignment_metadata(),
               "historical_launch_count": len(launches),
               "weather_grid_coordinates": {site: run.grid_coordinates[site] for site in TURBINE_IDS},
               "results": results, "limitations": [
-                  "CSV UTC offset is a user-provided working assumption, not confirmed by organizers.",
+                  "Source clock labels are matched without timezone conversion per user instruction; source timezone remains unspecified.",
                   "Ten-minute timestamp interval position is unknown; hourly alignment is an assumption.",
                   "Exact historical weather publication times are not supplied; use is delayed 12 hours.",
                   "Weather is forecast wind at 100 m; height of CSV wind measurements is unknown.",
