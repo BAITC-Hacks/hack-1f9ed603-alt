@@ -9,6 +9,24 @@ import {
 
 type LoadState = "loading" | "ready" | "error";
 type RunState = "idle" | "loading" | "ready" | "error";
+const DEMO_ISSUED_AT = "2026-02-01T12:00:00Z";
+
+function validateIssuedAt(value: string): string {
+  const parts = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2})(?:\.\d+)?)?(?:Z|[+-]\d{2}:\d{2})$/.exec(value);
+  if (!parts || !Number.isFinite(Date.parse(value))) {
+    return "Введите время в ISO 8601 с часовым поясом, например 2026-02-01T12:00:00Z";
+  }
+  const [, year, month, day, hour, minute, second = "0"] = parts;
+  const calendarDay = new Date(Date.UTC(Number(year), Number(month) - 1, Number(day)));
+  if (calendarDay.getUTCFullYear() !== Number(year) || calendarDay.getUTCMonth() + 1 !== Number(month) ||
+      calendarDay.getUTCDate() !== Number(day) || Number(hour) > 23 || Number(minute) > 59 || Number(second) > 59) {
+    return "Укажите существующую дату и время";
+  }
+  if (Date.parse(value) % 3_600_000 !== 0) {
+    return "Запуск должен приходиться на начало часа по UTC";
+  }
+  return "";
+}
 
 function formatTime(value: string): string {
   return value.replace("T", " ");
@@ -23,6 +41,8 @@ function turbineName(id: TurbineSummary["id"]): string {
 }
 
 function ForecastResult({ run }: { run: ForecastRunResponse }) {
+  const horizonLabel = run.horizon_hours === 24 ? "24 часа" : "48 часов";
+  const pointCountLabel = run.points.length === 24 ? "24 почасовые точки" : "48 почасовых точек";
   const chartWidth = 688;
   const chartHeight = 164;
   const chartLeft = 48;
@@ -38,14 +58,14 @@ function ForecastResult({ run }: { run: ForecastRunResponse }) {
       <div className="section-heading">
         <div>
           <p className="eyebrow">Результат расчёта</p>
-          <h2 id="result-title">{turbineName(run.turbine_id)} · {run.horizon_hours} часов</h2>
+          <h2 id="result-title">{turbineName(run.turbine_id)} · {horizonLabel}</h2>
         </div>
-        <span className="badge">{run.points.length} почасовых точек</span>
+        <span className="badge">{pointCountLabel}</span>
       </div>
       <p className="result-note">Нормализованная активная мощность — доля от 0 до 1. Каждая точка относится к часу, заканчивающемуся в указанное время (UTC).</p>
 
       <div className="chart-wrap">
-        <svg className="forecast-chart" viewBox="0 0 760 212" role="img" aria-label={`Почасовой прогноз для ${turbineName(run.turbine_id)}: ${run.points.length} точек, доля от 0 до 1`}>
+        <svg className="forecast-chart" viewBox="0 0 760 212" role="img" aria-label={`${turbineName(run.turbine_id)}: ${pointCountLabel}, доля от 0 до 1`}>
           {[1, 0.5, 0].map((level) => {
             const y = chartTop + (1 - level) * chartHeight;
             return (
@@ -67,13 +87,14 @@ function ForecastResult({ run }: { run: ForecastRunResponse }) {
       <h3>Источник и параметры запуска</h3>
       <dl className="metadata-grid">
         <div><dt>Источник погоды</dt><dd>{run.weather_source}</dd></div>
-        <div><dt>Выпуск погоды</dt><dd><time dateTime={run.weather_run_issued_at}>{formatUtcTime(run.weather_run_issued_at)}</time></dd></div>
+        <div><dt>Время погодного цикла</dt><dd><time dateTime={run.weather_run_issued_at}>{formatUtcTime(run.weather_run_issued_at)}</time></dd></div>
         <div><dt>ID погодного выпуска</dt><dd className="code-value">{run.weather_run_id}</dd></div>
         <div><dt>Время запуска</dt><dd><time dateTime={run.issued_at}>{formatUtcTime(run.issued_at)}</time></dd></div>
         <div><dt>Данные доступны до</dt><dd><time dateTime={run.input_data_cutoff_at}>{formatUtcTime(run.input_data_cutoff_at)}</time></dd></div>
         <div><dt>Версия модели</dt><dd className="code-value">{run.model_version}</dd></div>
         <div><dt>ID расчёта</dt><dd className="code-value">{run.run_id}</dd></div>
       </dl>
+      <p className="result-note">Время погодного цикла не подтверждает точное время публикации архивного прогноза.</p>
 
       <h3>Почасовые значения</h3>
       <div className="table-wrap">
@@ -100,10 +121,12 @@ export function App() {
   const [turbines, setTurbines] = useState<TurbineSummary[]>([]);
   const [selected, setSelected] = useState<TurbineSummary["id"]>("turbine_1");
   const [horizon, setHorizon] = useState<24 | 48>(48);
-  const [issuedAt, setIssuedAt] = useState("");
+  const [issuedAt, setIssuedAt] = useState(DEMO_ISSUED_AT);
+  const [timeTouched, setTimeTouched] = useState(false);
   const [runError, setRunError] = useState("");
   const [runState, setRunState] = useState<RunState>("idle");
   const [run, setRun] = useState<ForecastRunResponse | null>(null);
+  const timeError = timeTouched ? validateIssuedAt(issuedAt) : "";
 
   async function load() {
     setLoadState("loading");
@@ -124,10 +147,11 @@ export function App() {
   }, []);
 
   async function submit() {
-    if (!/(Z|[+-]\d{2}:\d{2})$/.test(issuedAt) || Number.isNaN(Date.parse(issuedAt))) {
+    setTimeTouched(true);
+    if (validateIssuedAt(issuedAt)) {
       setRun(null);
-      setRunState("error");
-      setRunError("Введите время запуска в ISO 8601 с часовым поясом");
+      setRunState("idle");
+      setRunError("");
       return;
     }
     setRun(null);
@@ -150,9 +174,9 @@ export function App() {
   return (
     <main className="page">
       <header className="hero">
-        <p className="eyebrow">HackAlem AI · каркас проекта</p>
+        <p className="eyebrow">HackAlem AI · почасовой прогноз</p>
         <h1>Прогноз выработки ВЭС</h1>
-        <p>Две турбины, почасовой горизонт 24–48 часов. Интерфейс показывает реальные данные из CSV и состояние подключения прогнозной модели.</p>
+        <p>Выберите турбину и горизонт 24 или 48 часов. Прогноз строится по данным выбранного исторического запуска.</p>
       </header>
 
       <section className="panel" aria-labelledby="data-title">
@@ -186,14 +210,20 @@ export function App() {
         <h2 id="forecast-title">Запуск прогноза</h2>
         <p>Укажите момент запуска с часовым поясом. Результат появится после успешного ответа API.</p>
         <div className="form-row">
-          <label>Время запуска
+          <div className="form-field">
+            <label htmlFor="issued-at">Время запуска</label>
             <input
+              id="issued-at"
               value={issuedAt}
               onChange={(event) => setIssuedAt(event.target.value)}
-              placeholder="2026-01-31T00:00:00+05:00"
+              onBlur={() => setTimeTouched(true)}
+              placeholder={DEMO_ISSUED_AT}
               aria-label="Время запуска в ISO 8601 с часовым поясом"
+              aria-invalid={Boolean(timeError)}
+              aria-describedby={timeError ? "issued-at-error" : undefined}
             />
-          </label>
+            {timeError && <p className="field-error" id="issued-at-error" role="alert">{timeError}</p>}
+          </div>
           <label>Турбина
             <select value={selected} onChange={(event) => setSelected(event.target.value as TurbineSummary["id"])}>
               <option value="turbine_1">Турбина 1</option>
@@ -210,7 +240,7 @@ export function App() {
             {runState === "loading" ? "Запуск…" : "Запустить"}
           </button>
         </div>
-        {runState === "idle" && <p className="result-note" role="status">Прогноз ещё не запущен.</p>}
+        {runState === "idle" && !timeError && <p className="result-note" role="status">Прогноз ещё не запущен.</p>}
         {runState === "loading" && <p className="result-note" role="status">Получаем почасовой прогноз…</p>}
         {runState === "error" && <p className="error" role="alert">{runError}</p>}
       </section>

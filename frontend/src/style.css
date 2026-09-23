@@ -24,8 +24,12 @@ input { display: block; margin-top: 7px; width: 270px; max-width: 100%; padding:
 .card { border: 1px solid #dce7e3; border-radius: 13px; padding: 18px; }
 .card h3 { margin-top: 0; }
 .card p { line-height: 1.5; }
-.form-row { display: flex; flex-wrap: wrap; align-items: end; gap: 16px; margin-top: 22px; }
+.form-row { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 16px; margin-top: 22px; }
 .form-row label { font-weight: 600; }
+.form-field label { display: block; }
+.form-row button { margin-top: 27px; }
+.field-error { max-width: 270px; margin: 7px 0 0; color: #aa3131; font-size: .85rem; line-height: 1.4; }
+input[aria-invalid="true"] { border-color: #aa3131; }
 .error { color: #aa3131; }
 .result-note { color: #536b72; line-height: 1.5; }
 .result-panel { margin-top: 28px; }
