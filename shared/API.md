@@ -1,6 +1,6 @@
 # API contract v1
 
-Этот документ фиксирует интерфейс между `backend/`, `frontend/` и `forecasting/`. Для поддерживаемого запуска `POST /api/forecast-runs` возвращает рассчитанный прогноз; числовые значения в примере ниже иллюстративны.
+Этот документ фиксирует интерфейс между `backend/`, `frontend/` и `forecasting/`. Ниже приведён ответ проверочного запуска `POST /api/forecast-runs`; `run_id` при каждом вызове создаётся заново.
 
 ## Турбины и координаты
 
@@ -69,12 +69,12 @@
 ```json
 {
   "turbine_id": "turbine_1",
-  "issued_at": "2026-01-31T00:00:00Z",
+  "issued_at": "2026-02-01T12:00:00Z",
   "horizon_hours": 24
 }
 ```
 
-`turbine_id` принимает только `turbine_1` или `turbine_2`; `horizon_hours` — только 24 или 48. `issued_at` обязательно содержит смещение или `Z`. Для исторического запуска погодный выпуск и все входные наблюдения должны быть доступны к `issued_at`.
+`turbine_id` принимает только `turbine_1` или `turbine_2`; `horizon_hours` — только 24 или 48. `issued_at` обязательно содержит смещение или `Z` и приходится на начало часа по UTC. Для исторического запуска погодный выпуск и все входные наблюдения должны быть доступны к `issued_at`.
 
 При успехе: `201 Created` и полный результат. **Следующие числа и идентификаторы вымышлены исключительно для примера формата; API не должен возвращать их вместо расчёта.**
 
@@ -83,42 +83,114 @@
   "run_id": "e96af92c-6995-4dc0-8531-0ac762c98e70",
   "status": "completed",
   "turbine_id": "turbine_1",
-  "issued_at": "2026-01-31T00:00:00Z",
+  "issued_at": "2026-02-01T12:00:00Z",
   "horizon_hours": 24,
   "unit": "normalized_power",
-  "input_data_cutoff_at": "2026-01-31T00:00:00Z",
-  "weather_source": "example_archive",
-  "weather_run_id": "example-20260130T1800Z",
-  "weather_run_issued_at": "2026-01-30T18:00:00Z",
-  "weather_run_initialized_at": "2026-01-30T18:00:00Z",
-  "weather_run_usable_after_at": "2026-01-31T00:00:00Z",
+  "input_data_cutoff_at": "2026-01-31T19:00:00Z",
+  "weather_source": "open_meteo_single_runs_ecmwf_ifs",
+  "weather_run_id": "ecmwf_ifs_20260201T0000Z",
+  "weather_run_issued_at": "2026-02-01T00:00:00Z",
+  "weather_run_initialized_at": "2026-02-01T00:00:00Z",
+  "weather_run_usable_after_at": "2026-02-01T12:00:00Z",
   "weather_actual_publication_at": null,
-  "model_version": "example-model-v1",
+  "model_version": "ecmwf_ifs_100m_bin_curve_v1_final_20260201T0000Z",
   "points": [
-    {"time": "2026-01-31T01:00:00Z", "normalized_power": 0.31},
-    {"time": "2026-01-31T02:00:00Z", "normalized_power": 0.33},
-    {"time": "2026-01-31T03:00:00Z", "normalized_power": 0.34},
-    {"time": "2026-01-31T04:00:00Z", "normalized_power": 0.37},
-    {"time": "2026-01-31T05:00:00Z", "normalized_power": 0.39},
-    {"time": "2026-01-31T06:00:00Z", "normalized_power": 0.42},
-    {"time": "2026-01-31T07:00:00Z", "normalized_power": 0.44},
-    {"time": "2026-01-31T08:00:00Z", "normalized_power": 0.46},
-    {"time": "2026-01-31T09:00:00Z", "normalized_power": 0.48},
-    {"time": "2026-01-31T10:00:00Z", "normalized_power": 0.47},
-    {"time": "2026-01-31T11:00:00Z", "normalized_power": 0.45},
-    {"time": "2026-01-31T12:00:00Z", "normalized_power": 0.43},
-    {"time": "2026-01-31T13:00:00Z", "normalized_power": 0.41},
-    {"time": "2026-01-31T14:00:00Z", "normalized_power": 0.38},
-    {"time": "2026-01-31T15:00:00Z", "normalized_power": 0.36},
-    {"time": "2026-01-31T16:00:00Z", "normalized_power": 0.35},
-    {"time": "2026-01-31T17:00:00Z", "normalized_power": 0.34},
-    {"time": "2026-01-31T18:00:00Z", "normalized_power": 0.32},
-    {"time": "2026-01-31T19:00:00Z", "normalized_power": 0.30},
-    {"time": "2026-01-31T20:00:00Z", "normalized_power": 0.29},
-    {"time": "2026-01-31T21:00:00Z", "normalized_power": 0.28},
-    {"time": "2026-01-31T22:00:00Z", "normalized_power": 0.27},
-    {"time": "2026-01-31T23:00:00Z", "normalized_power": 0.26},
-    {"time": "2026-02-01T00:00:00Z", "normalized_power": 0.25}
+    {
+      "time": "2026-02-01T13:00:00Z",
+      "normalized_power": 0.371398
+    },
+    {
+      "time": "2026-02-01T14:00:00Z",
+      "normalized_power": 0.47421
+    },
+    {
+      "time": "2026-02-01T15:00:00Z",
+      "normalized_power": 0.371398
+    },
+    {
+      "time": "2026-02-01T16:00:00Z",
+      "normalized_power": 0.371398
+    },
+    {
+      "time": "2026-02-01T17:00:00Z",
+      "normalized_power": 0.371398
+    },
+    {
+      "time": "2026-02-01T18:00:00Z",
+      "normalized_power": 0.371398
+    },
+    {
+      "time": "2026-02-01T19:00:00Z",
+      "normalized_power": 0.370652
+    },
+    {
+      "time": "2026-02-01T20:00:00Z",
+      "normalized_power": 0.370652
+    },
+    {
+      "time": "2026-02-01T21:00:00Z",
+      "normalized_power": 0.370652
+    },
+    {
+      "time": "2026-02-01T22:00:00Z",
+      "normalized_power": 0.371398
+    },
+    {
+      "time": "2026-02-01T23:00:00Z",
+      "normalized_power": 0.528043
+    },
+    {
+      "time": "2026-02-02T00:00:00Z",
+      "normalized_power": 0.528043
+    },
+    {
+      "time": "2026-02-02T01:00:00Z",
+      "normalized_power": 0.528043
+    },
+    {
+      "time": "2026-02-02T02:00:00Z",
+      "normalized_power": 0.47421
+    },
+    {
+      "time": "2026-02-02T03:00:00Z",
+      "normalized_power": 0.47421
+    },
+    {
+      "time": "2026-02-02T04:00:00Z",
+      "normalized_power": 0.637734
+    },
+    {
+      "time": "2026-02-02T05:00:00Z",
+      "normalized_power": 0.528043
+    },
+    {
+      "time": "2026-02-02T06:00:00Z",
+      "normalized_power": 0.514649
+    },
+    {
+      "time": "2026-02-02T07:00:00Z",
+      "normalized_power": 0.686633
+    },
+    {
+      "time": "2026-02-02T08:00:00Z",
+      "normalized_power": 0.771929
+    },
+    {
+      "time": "2026-02-02T09:00:00Z",
+      "normalized_power": 0.771929
+    },
+    {
+      "time": "2026-02-02T10:00:00Z",
+      "normalized_power": 0.686633
+    },
+    {
+      "time": "2026-02-02T11:00:00Z",
+      "normalized_power": 0.637734
+    },
+    {
+      "time": "2026-02-02T12:00:00Z",
+      "normalized_power": 0.528043
+    }
   ]
 }
 ```
