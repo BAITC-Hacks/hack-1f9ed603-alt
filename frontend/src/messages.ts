@@ -1,7 +1,24 @@
+import { assistantMessages } from "./assistantMessages";
 import { forecastMessages } from "./forecastMessages";
 
 export const messages = {
   ...forecastMessages,
+  ...assistantMessages,
+  "Способ ввода": {
+    "ru": "Способ ввода",
+    "kk": "Енгізу тәсілі",
+    "en": "Input mode"
+  },
+  "Вручную": {
+    "ru": "Вручную",
+    "kk": "Қолмен",
+    "en": "Manual"
+  },
+  "Спросить ИИ": {
+    "ru": "Спросить ИИ",
+    "kk": "ЖИ-ден сұрау",
+    "en": "Ask AI"
+  },
   "Закрыть": {
     "ru": "Закрыть",
     "kk": "Жабу",

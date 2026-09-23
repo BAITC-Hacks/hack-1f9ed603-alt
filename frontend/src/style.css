@@ -165,3 +165,9 @@ input[aria-invalid="true"] { border-color: #bd7f70; }
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
 body:has(dialog[open]) { overflow: hidden; }
+.setup-modes { display: flex; gap: 4px; margin: -6px 0 25px; padding: 4px; border: 1px solid var(--line); border-radius: 7px; background: #11130f; }
+.setup-modes button { display: inline-flex; justify-content: center; align-items: center; flex: 1; gap: 7px; border: 1px solid transparent; border-radius: 4px; padding: 9px 6px; min-height: 38px; color: var(--muted); background: transparent; font-size: 11px; white-space: nowrap; }
+.setup-modes button svg { flex-shrink: 0; }
+.setup-modes button:hover { color: var(--ink); background: #ffffff06; }
+.setup-modes button[aria-selected="true"] { color: var(--accent); border-color: #514735; background: #e8bb7410; }
+#setup-manual-panel[hidden], #setup-assistant-panel[hidden] { display: none; }

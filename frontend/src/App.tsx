@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { ArrowRight, Check, CircleHelp, Clock3, Database, LoaderCircle, Radio, SlidersHorizontal, Wind, X } from "lucide-react";
+import { useEffect, useRef, useState, type KeyboardEvent } from "react";
+import { ArrowRight, Check, CircleHelp, Clock3, Database, LoaderCircle, Radio, SlidersHorizontal, Sparkles, Wind, X } from "lucide-react";
 import { LanguageSwitcher, useLanguage } from "./i18n";
 import type { Translate } from "./messages";
+import { AssistantPanel } from "./AssistantPanel";
 import { ForecastResult } from "./ForecastResult";
 import { ApiError, createForecastRun, getHealth, getTurbines, type ForecastRunResponse, type TurbineSummary } from "./api";
 
@@ -60,6 +61,9 @@ function DataDialog({ turbines, open, onClose }: { turbines: TurbineSummary[]; o
 
 export function App() {
   const { t, locale } = useLanguage();
+  const [setupMode, setSetupMode] = useState<"manual" | "assistant">("manual");
+  const manualTab = useRef<HTMLButtonElement>(null);
+  const assistantTab = useRef<HTMLButtonElement>(null);
   const [loadState, setLoadState] = useState<LoadState>("loading");
   const [loadError, setLoadError] = useState<ApiError | null>(null);
   const [turbines, setTurbines] = useState<TurbineSummary[]>([]);
@@ -74,6 +78,14 @@ export function App() {
   const timeError = timeTouched ? validateIssuedAt(issuedAt, t) : "";
   const selectedTurbine = turbines.find((turbine) => turbine.id === selected);
   const changed = run && (run.turbine_id !== selected || run.horizon_hours !== horizon || Date.parse(run.issued_at) !== Date.parse(issuedAt));
+
+  function switchSetupMode(event: KeyboardEvent<HTMLDivElement>) {
+    if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+    event.preventDefault();
+    const next = event.key === "Home" ? "manual" : event.key === "End" ? "assistant" : setupMode === "manual" ? "assistant" : "manual";
+    setSetupMode(next);
+    (next === "manual" ? manualTab : assistantTab).current?.focus();
+  }
 
   async function load() {
     setLoadState("loading");
@@ -121,32 +133,41 @@ export function App() {
         <div className="workspace-grid">
           <section className="control-panel" aria-labelledby="forecast-title">
             <div className="panel-heading"><SlidersHorizontal size={17} aria-hidden="true" /><h2 id="forecast-title" tabIndex={-1}>{t("Параметры прогноза")}</h2></div>
-            <form onSubmit={(event) => { event.preventDefault(); void submit(); }}>
-              <fieldset disabled={runState === "loading"}>
-                <legend className="sr-only">{t("Параметры прогноза")}</legend>
-                <div className="control-section"><p className="control-label" id="turbine-label"><span>01</span>{t("Турбина")}</p>
-                  <div className="turbine-picker" role="group" aria-labelledby="turbine-label">
-                    {(["turbine_1", "turbine_2"] as const).map((id, index) => (
-                      <button type="button" className={`turbine-option ${selected === id ? "selected" : ""}`} aria-pressed={selected === id} key={id} onClick={() => setSelected(id)} disabled={loadState !== "ready" || !turbines.some((turbine) => turbine.id === id)}>
-                        <img src={index === 0 ? "/images/wind-sunset.jpg" : "/images/wind-dusk.jpg"} alt="" width="160" height="120" />
-                        <span className="turbine-check">{selected === id ? <Check size={13} aria-hidden="true" /> : <Wind size={13} aria-hidden="true" />}</span>
-                        <span className="turbine-name">{turbineName(id, t)}</span>
-                      </button>
-                    ))}
+            <div className="setup-modes" role="tablist" aria-label={t("Способ ввода")} onKeyDown={switchSetupMode}>
+              <button type="button" id="setup-manual-tab" ref={manualTab} role="tab" aria-selected={setupMode === "manual"} aria-controls="setup-manual-panel" tabIndex={setupMode === "manual" ? 0 : -1} onClick={() => setSetupMode("manual")}><SlidersHorizontal size={14} aria-hidden="true" />{t("Вручную")}</button>
+              <button type="button" id="setup-assistant-tab" ref={assistantTab} role="tab" aria-selected={setupMode === "assistant"} aria-controls="setup-assistant-panel" tabIndex={setupMode === "assistant" ? 0 : -1} onClick={() => setSetupMode("assistant")}><Sparkles size={14} aria-hidden="true" />{t("Спросить ИИ")}</button>
+            </div>
+            <div id="setup-manual-panel" role="tabpanel" aria-labelledby="setup-manual-tab" hidden={setupMode !== "manual"}>
+              <form onSubmit={(event) => { event.preventDefault(); void submit(); }}>
+                <fieldset disabled={runState === "loading"}>
+                  <legend className="sr-only">{t("Параметры прогноза")}</legend>
+                  <div className="control-section"><p className="control-label" id="turbine-label"><span>01</span>{t("Турбина")}</p>
+                    <div className="turbine-picker" role="group" aria-labelledby="turbine-label">
+                      {(["turbine_1", "turbine_2"] as const).map((id, index) => (
+                        <button type="button" className={`turbine-option ${selected === id ? "selected" : ""}`} aria-pressed={selected === id} key={id} onClick={() => setSelected(id)} disabled={loadState !== "ready" || !turbines.some((turbine) => turbine.id === id)}>
+                          <img src={index === 0 ? "/images/wind-sunset.jpg" : "/images/wind-dusk.jpg"} alt="" width="160" height="120" />
+                          <span className="turbine-check">{selected === id ? <Check size={13} aria-hidden="true" /> : <Wind size={13} aria-hidden="true" />}</span>
+                          <span className="turbine-name">{turbineName(id, t)}</span>
+                        </button>
+                      ))}
+                    </div>
+                    {selectedTurbine && <p className="observation-caption"><Database size={12} aria-hidden="true" /><strong>{selectedTurbine.rows.toLocaleString(locale)}</strong> {t("наблюдений")}</p>}
                   </div>
-                  {selectedTurbine && <p className="observation-caption"><Database size={12} aria-hidden="true" /><strong>{selectedTurbine.rows.toLocaleString(locale)}</strong> {t("наблюдений")}</p>}
-                </div>
-                <div className="control-section"><label className="control-label" htmlFor="issued-at"><span>02</span>{t("Время запуска")}</label>
-                  <input id="issued-at" value={issuedAt} onChange={(event) => setIssuedAt(event.target.value)} onBlur={() => setTimeTouched(true)} placeholder={DEMO_ISSUED_AT} aria-label={t("Время запуска в ISO 8601 с часовым поясом")} aria-invalid={Boolean(timeError)} aria-describedby={timeError ? "issued-at-error" : "time-hint"} />
-                  {timeError ? <p className="field-error" id="issued-at-error" role="alert">{timeError}</p> : <p id="time-hint" className="field-hint">{t("Исторический запуск · ISO 8601")}</p>}
-                </div>
-                <div className="control-section"><p className="control-label" id="horizon-label"><span>03</span>{t("Горизонт")}</p><div className="horizon-picker" role="group" aria-labelledby="horizon-label">{([24, 48] as const).map((hours) => <button type="button" key={hours} aria-pressed={horizon === hours} onClick={() => setHorizon(hours)}>{t(hours === 24 ? "24 часа" : "48 часов")}</button>)}</div></div>
-                <button className="run-button" type="submit" disabled={loadState !== "ready" || !selectedTurbine || runState === "loading"}>{runState === "loading" ? <LoaderCircle className="spin" size={18} aria-hidden="true" /> : <Wind size={18} aria-hidden="true" />}<span>{runState === "loading" ? t("Запуск…") : t("Построить прогноз")}</span>{runState !== "loading" && <ArrowRight size={17} aria-hidden="true" />}</button>
-              </fieldset>
-            </form>
-            {loadState === "error" && <div className="load-error" role="alert"><p>{loadError && t(loadError.messageKey)}{loadError?.status && ` (HTTP ${loadError.status})`}</p><button type="button" className="text-button" onClick={() => void load()}>{t("Повторить")}</button></div>}
-            {loadState === "ready" && !turbines.length && <p className="load-error">{t("Файлы турбин не найдены.")}</p>}
-            <p className="control-footnote"><CircleHelp size={14} aria-hidden="true" />{t("Результат — доля мощности от 0 до 1.")}</p>
+                  <div className="control-section"><label className="control-label" htmlFor="issued-at"><span>02</span>{t("Время запуска")}</label>
+                    <input id="issued-at" value={issuedAt} onChange={(event) => setIssuedAt(event.target.value)} onBlur={() => setTimeTouched(true)} placeholder={DEMO_ISSUED_AT} aria-label={t("Время запуска в ISO 8601 с часовым поясом")} aria-invalid={Boolean(timeError)} aria-describedby={timeError ? "issued-at-error" : "time-hint"} />
+                    {timeError ? <p className="field-error" id="issued-at-error" role="alert">{timeError}</p> : <p id="time-hint" className="field-hint">{t("Исторический запуск · ISO 8601")}</p>}
+                  </div>
+                  <div className="control-section"><p className="control-label" id="horizon-label"><span>03</span>{t("Горизонт")}</p><div className="horizon-picker" role="group" aria-labelledby="horizon-label">{([24, 48] as const).map((hours) => <button type="button" key={hours} aria-pressed={horizon === hours} onClick={() => setHorizon(hours)}>{t(hours === 24 ? "24 часа" : "48 часов")}</button>)}</div></div>
+                  <button className="run-button" type="submit" disabled={loadState !== "ready" || !selectedTurbine || runState === "loading"}>{runState === "loading" ? <LoaderCircle className="spin" size={18} aria-hidden="true" /> : <Wind size={18} aria-hidden="true" />}<span>{runState === "loading" ? t("Запуск…") : t("Построить прогноз")}</span>{runState !== "loading" && <ArrowRight size={17} aria-hidden="true" />}</button>
+                </fieldset>
+              </form>
+              {loadState === "error" && <div className="load-error" role="alert"><p>{loadError && t(loadError.messageKey)}{loadError?.status && ` (HTTP ${loadError.status})`}</p><button type="button" className="text-button" onClick={() => void load()}>{t("Повторить")}</button></div>}
+              {loadState === "ready" && !turbines.length && <p className="load-error">{t("Файлы турбин не найдены.")}</p>}
+              <p className="control-footnote"><CircleHelp size={14} aria-hidden="true" />{t("Результат — доля мощности от 0 до 1.")}</p>
+            </div>
+            <div id="setup-assistant-panel" role="tabpanel" aria-labelledby="setup-assistant-tab" hidden={setupMode !== "assistant"}>
+              <AssistantPanel request={{ turbine_id: selected, issued_at: issuedAt, horizon_hours: horizon }} run={run && !changed ? run : null} />
+            </div>
           </section>
 
           <section className="forecast-workspace" aria-label={t("Результат расчёта")} aria-busy={runState === "loading"}>
