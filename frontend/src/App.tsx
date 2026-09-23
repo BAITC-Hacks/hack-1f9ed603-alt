@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState, type KeyboardEvent } from "react";
-import { ArrowRight, Check, CircleHelp, Clock3, Database, LoaderCircle, Radio, SlidersHorizontal, Sparkles, Wind, X } from "lucide-react";
+import { ArrowRight, CircleHelp, Clock3, Database, LoaderCircle, Radio, SlidersHorizontal, Sparkles, Wind, X } from "lucide-react";
 import { LanguageSwitcher, useLanguage } from "./i18n";
 import type { Translate } from "./messages";
 import { AssistantPanel, type AssistantFeedback } from "./AssistantPanel";
+import { TurbineSelector, HorizonSelector } from "./ForecastSelectors";
 import { ForecastResult } from "./ForecastResult";
 import { ApiError, createForecastRun, getAssistantForecastParameters, getHealth, getTurbines, issuedAtError, type ForecastRunRequest, type ForecastRunResponse, type TurbineSummary } from "./api";
 
@@ -42,7 +43,7 @@ function DataDialog({ turbines, open, onClose }: { turbines: TurbineSummary[]; o
 }
 
 export function App() {
-  const { t, locale, language } = useLanguage();
+  const { t, language } = useLanguage();
   const [setupMode, setSetupMode] = useState<"manual" | "assistant">("manual");
   const manualTab = useRef<HTMLButtonElement>(null);
   const assistantTab = useRef<HTMLButtonElement>(null);
@@ -70,6 +71,16 @@ export function App() {
     issued_at: timeErrorKey ? lastValidIssuedAt : issuedAt,
     horizon_hours: horizon,
   };
+
+  function updateTurbine(value: TurbineSummary["id"]) {
+    setAssistantFeedback(null);
+    setSelected(value);
+  }
+
+  function updateHorizon(value: 24 | 48) {
+    setAssistantFeedback(null);
+    setHorizon(value);
+  }
 
   function updateIssuedAt(value: string) {
     setIssuedAt(value);
@@ -169,30 +180,21 @@ export function App() {
               <form onSubmit={(event) => { event.preventDefault(); void submit(); }}>
                 <fieldset disabled={busy}>
                   <legend className="sr-only">{t("Параметры прогноза")}</legend>
-                  <div className="control-section"><p className="control-label" id="turbine-label"><span>01</span>{t("Турбина")}</p>
-                    <div className="turbine-picker" role="group" aria-labelledby="turbine-label">
-                      {(["turbine_1", "turbine_2"] as const).map((id, index) => (
-                        <button type="button" className={`turbine-option ${selected === id ? "selected" : ""}`} aria-pressed={selected === id} key={id} onClick={() => { setAssistantFeedback(null); setSelected(id); }} disabled={loadState !== "ready" || !turbines.some((turbine) => turbine.id === id)}>
-                          <img src={index === 0 ? "/images/wind-sunset.jpg" : "/images/wind-dusk.jpg"} alt="" width="160" height="120" />
-                          <span className="turbine-check">{selected === id ? <Check size={13} aria-hidden="true" /> : <Wind size={13} aria-hidden="true" />}</span>
-                          <span className="turbine-name">{turbineName(id, t)}</span>
-                        </button>
-                      ))}
-                    </div>
-                    {selectedTurbine && <p className="observation-caption"><Database size={12} aria-hidden="true" /><strong>{selectedTurbine.rows.toLocaleString(locale)}</strong> {t("наблюдений")}</p>}
-                  </div>
+                  <TurbineSelector turbines={turbines} value={selected} onChange={updateTurbine} disabled={busy || loadState !== "ready"} />
                   <div className="control-section"><label className="control-label" htmlFor="issued-at"><span>02</span>{t("Время запуска")}</label>
                     <input id="issued-at" value={issuedAt} onChange={(event) => { setAssistantFeedback(null); updateIssuedAt(event.target.value); }} onBlur={() => setTimeTouched(true)} placeholder={DEMO_ISSUED_AT} aria-label={t("Время запуска в ISO 8601 с часовым поясом")} aria-invalid={Boolean(timeError)} aria-describedby={timeError ? "issued-at-error" : "time-hint"} />
                     {timeError ? <p className="field-error" id="issued-at-error" role="alert">{timeError}</p> : <p id="time-hint" className="field-hint">{t("Исторический запуск · ISO 8601")}</p>}
                   </div>
-                  <div className="control-section"><p className="control-label" id="horizon-label"><span>03</span>{t("Горизонт")}</p><div className="horizon-picker" role="group" aria-labelledby="horizon-label">{([24, 48] as const).map((hours) => <button type="button" key={hours} aria-pressed={horizon === hours} onClick={() => { setAssistantFeedback(null); setHorizon(hours); }}>{t(hours === 24 ? "24 часа" : "48 часов")}</button>)}</div></div>
+                  <HorizonSelector value={horizon} onChange={updateHorizon} disabled={busy} step="03" />
                   <button className="run-button" type="submit" disabled={loadState !== "ready" || !selectedTurbine || busy}>{busy ? <LoaderCircle className="spin" size={18} aria-hidden="true" /> : <Wind size={18} aria-hidden="true" />}<span>{busy ? t("Запуск…") : t("Построить прогноз")}</span>{!busy && <ArrowRight size={17} aria-hidden="true" />}</button>
                 </fieldset>
               </form>
               <p className="control-footnote"><CircleHelp size={14} aria-hidden="true" />{t("Результат — доля мощности от 0 до 1.")}</p>
             </div>
             <div id="setup-assistant-panel" role="tabpanel" aria-labelledby="setup-assistant-tab" hidden={setupMode !== "assistant"}>
-              <AssistantPanel request={assistantDefaults} defaultTimeFallback={Boolean(timeErrorKey)} run={run && !changed ? run : null} busy={busy} interpreting={runState === "interpreting"} disabled={loadState !== "ready" || !selectedTurbine} feedback={assistantFeedback} onSubmit={submit} />
+              <TurbineSelector turbines={turbines} value={selected} onChange={updateTurbine} disabled={busy || loadState !== "ready"} />
+              <HorizonSelector value={horizon} onChange={updateHorizon} disabled={busy} step="02" />
+              <AssistantPanel defaultTimeFallback={Boolean(timeErrorKey)} busy={busy} interpreting={runState === "interpreting"} disabled={loadState !== "ready" || !selectedTurbine} feedback={assistantFeedback} onSubmit={submit} />
             </div>
             {loadState === "error" && <div className="load-error" role="alert"><p>{loadError && t(loadError.messageKey)}{loadError?.status && ` (HTTP ${loadError.status})`}</p><button type="button" className="text-button" onClick={() => void load()}>{t("Повторить")}</button></div>}
             {loadState === "ready" && !turbines.length && <p className="load-error">{t("Файлы турбин не найдены.")}</p>}

@@ -2,7 +2,7 @@
 
 import { useId, useState, type FormEvent } from "react";
 import { LoaderCircle, MessageSquare, Send, Sparkles } from "lucide-react";
-import type { ApiError, ForecastRunRequest, ForecastRunResponse } from "./api";
+import type { ApiError, ForecastRunRequest } from "./api";
 import { useLanguage } from "./i18n";
 import "./AssistantPanel.css";
 
@@ -13,9 +13,7 @@ export type AssistantFeedback = { question: string } & (
 );
 
 type AssistantPanelProps = {
-  request: ForecastRunRequest;
   defaultTimeFallback: boolean;
-  run: ForecastRunResponse | null;
   busy: boolean;
   interpreting: boolean;
   disabled: boolean;
@@ -23,12 +21,10 @@ type AssistantPanelProps = {
   onSubmit: (message: string) => Promise<void>;
 };
 
-export function AssistantPanel({ request, defaultTimeFallback, run, busy, interpreting, disabled, feedback, onSubmit }: AssistantPanelProps) {
+export function AssistantPanel({ defaultTimeFallback, busy, interpreting, disabled, feedback, onSubmit }: AssistantPanelProps) {
   const { t, locale } = useLanguage();
   const id = useId();
   const [draft, setDraft] = useState("");
-  const hasResult = run !== null && run.turbine_id === request.turbine_id &&
-    run.horizon_hours === request.horizon_hours && Date.parse(run.issued_at) === Date.parse(request.issued_at);
 
   function contextLabel(context: ForecastRunRequest) {
     return `${t(context.turbine_id === "turbine_1" ? "Турбина 1" : "Турбина 2")} · ${t(context.horizon_hours === 24 ? "24 часа" : "48 часов")}`;
@@ -44,14 +40,12 @@ export function AssistantPanel({ request, defaultTimeFallback, run, busy, interp
 
   return (
     <div className="assistant-panel" aria-busy={busy}>
-      <div className="assistant-context" aria-label={t("Контекст запроса")}>
-        <p><Sparkles size={14} aria-hidden="true" /><span>{contextLabel(request)}</span></p>
-        <span className="assistant-timestamp">{request.issued_at}</span>
-        <span className="assistant-context-note">{hasResult ? t("Результат прогноза выбран") : t("Параметры из ручного ввода")}</span>
-        {defaultTimeFallback && <span className="assistant-context-note">{t("В ручном вводе некорректная дата. В контексте сохранена последняя корректная дата; укажите новую в запросе.")}</span>}
+      <div className="assistant-help" id={`${id}-help`}>
+        <span className="assistant-help-badge">{t("Ввод с ИИ")}</span>
+        <p>{t("Опишите дату, время, турбину и горизонт. ИИ заполнит параметры и запустит расчёт той же прогнозной модели.")}</p>
+        <p>{t("Часы сохраняются без сдвига. Если турбина или горизонт не указаны, используются выбранные значения.")}</p>
+        {defaultTimeFallback && <p>{t("В ручном вводе некорректная дата. В контексте сохранена последняя корректная дата; укажите новую в запросе.")}</p>}
       </div>
-
-      <div className="assistant-help" id={`${id}-help`}><span className="assistant-help-badge">{t("Ввод с ИИ")}</span><p>{t("Опишите дату, время, турбину и горизонт. ИИ заполнит параметры и запустит расчёт той же прогнозной модели.")}</p><p>{t("Часы сохраняются без сдвига. Если турбина или горизонт не указаны, используются выбранные значения.")}</p></div>
 
       <form className="assistant-form" onSubmit={submit}>
         <label htmlFor={`${id}-question`}>{t("Запрос для прогноза")}</label>

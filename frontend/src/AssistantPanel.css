@@ -1,9 +1,5 @@
 .assistant-panel { min-width: 0; }
-.assistant-context { margin-bottom: 24px; padding-bottom: 18px; border-bottom: 1px solid var(--line); }
-.assistant-context > p { display: flex; align-items: center; gap: 8px; color: var(--ink); font-size: 12px; line-height: 1.6; }
-.assistant-context svg { color: var(--accent); flex-shrink: 0; }
 .assistant-timestamp { display: block; margin-top: 5px; font-family: ui-monospace, SFMono-Regular, monospace; font-size: 10px; color: var(--muted); overflow-wrap: anywhere; line-height: 1.7; }
-.assistant-context-note { display: block; margin-top: 10px; font-size: 11px; color: var(--muted); line-height: 1.7; }
 .assistant-form > label { display: block; margin-bottom: 11px; font-size: 12px; font-weight: 500; }
 .assistant-form textarea { display: block; width: 100%; min-height: 138px; max-height: 340px; resize: vertical; padding: 12px; border: 1px solid #44483c; border-radius: 6px; color: var(--ink); background: #10120f; font-family: inherit; font-size: 12px; line-height: 1.8; }
 .assistant-form textarea::placeholder { color: #92968b; opacity: 1; }
