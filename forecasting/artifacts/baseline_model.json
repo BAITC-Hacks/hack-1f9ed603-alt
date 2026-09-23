@@ -1,5 +1,6 @@
 {
-  "model_version": "ecmwf_ifs_100m_bin_curve_v1",
+  "model_family": "ecmwf_ifs_100m_bin_curve_v1",
+  "model_version": "ecmwf_ifs_100m_bin_curve_v1_final_20260201T0000Z",
   "weather_source": "open_meteo_single_runs_ecmwf_ifs",
   "csv_utc_offset_assumption": 5.0,
   "training_cutoff_exclusive": "2026-02-01T00:00:00+00:00",

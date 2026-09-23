@@ -25,7 +25,8 @@ def forecast(
     issued_at: datetime,
     horizon_hours: int,
     *,
-    model_path: Path = ROOT / "forecasting" / "artifacts" / "baseline_model.json",
+    model_path: Path | None = None,
+    model_dir: Path = ROOT / "forecasting" / "artifacts",
     weather_cache: Path = ROOT / "data" / "weather" / "ecmwf_ifs",
 ) -> dict[str, object]:
     if turbine_id not in TURBINE_IDS:
@@ -37,18 +38,28 @@ def forecast(
     issued = issued_at.astimezone(UTC)
     if issued.minute or issued.second or issued.microsecond:
         raise ForecastUnavailable("Архив погоды поддерживает запуск только в начале часа")
-    try:
-        artifact = json.loads(model_path.read_text(encoding="utf-8"))
-    except (OSError, ValueError) as exc:
-        raise ForecastUnavailable("Обученная модель недоступна") from exc
-    if artifact.get("model_version") != MODEL_VERSION or artifact.get("weather_source") != SOURCE:
-        raise ForecastUnavailable("Версия обученной модели несовместима с погодным источником")
-    try:
-        curve = PowerCurve.from_dict(artifact["curves"][turbine_id])
-    except (KeyError, TypeError, ValueError) as exc:
-        raise ForecastUnavailable("Артефакт модели повреждён") from exc
-    if curve.trained_through > issued:
+    paths = [model_path] if model_path is not None else sorted(model_dir.glob("baseline*.json"))
+    candidates: list[tuple[datetime, str, PowerCurve]] = []
+    for path in paths:
+        try:
+            artifact = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, ValueError) as exc:
+            raise ForecastUnavailable("Обученная модель недоступна") from exc
+        if (artifact.get("model_family", artifact.get("model_version")) != MODEL_VERSION
+                or artifact.get("weather_source") != SOURCE):
+            raise ForecastUnavailable("Версия обученной модели несовместима с погодным источником")
+        try:
+            curve = PowerCurve.from_dict(artifact["curves"][turbine_id])
+            training_cutoff = datetime.fromisoformat(artifact["training_cutoff_exclusive"])
+        except (KeyError, TypeError, ValueError) as exc:
+            raise ForecastUnavailable("Артефакт модели повреждён") from exc
+        if training_cutoff.tzinfo is None or training_cutoff.utcoffset() is None:
+            raise ForecastUnavailable("В артефакте модели нет часового пояса")
+        if training_cutoff <= issued and curve.trained_through < issued:
+            candidates.append((curve.trained_through, artifact["model_version"], curve))
+    if not candidates:
         raise ForecastUnavailable("Для исторического запуска нужна модель, обученная до момента запуска")
+    _, model_version, curve = max(candidates, key=lambda item: item[0])
 
     try:
         run = fetch_run(select_run(issued), weather_cache)
@@ -79,7 +90,10 @@ def forecast(
         # Nominal issue/cycle time. Historical *publication* is not in the archive;
         # the separate 12-hour availability rule is enforced above.
         "weather_run_issued_at": to_iso(run.initialized_at),
-        "model_version": MODEL_VERSION,
+        "weather_run_initialized_at": to_iso(run.initialized_at),
+        "weather_run_usable_after_at": to_iso(run.usable_after_at),
+        "weather_actual_publication_at": None,
+        "model_version": model_version,
         "points": points,
     }
 

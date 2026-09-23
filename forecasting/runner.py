@@ -11,5 +11,7 @@ def run_forecast(turbine_id: str, issued_at: datetime, horizon_hours: int) -> di
     result = forecast(turbine_id, issued_at, horizon_hours)
     return {key: result[key] for key in (
         "input_data_cutoff_at", "weather_source", "weather_run_id",
-        "weather_run_issued_at", "model_version", "points",
+        "weather_run_issued_at", "weather_run_initialized_at",
+        "weather_run_usable_after_at", "weather_actual_publication_at",
+        "model_version", "points",
     )}

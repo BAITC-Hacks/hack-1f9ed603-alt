@@ -80,6 +80,24 @@ def _days(start: date, end: date):
         day += timedelta(days=1)
 
 
+def build_model_artifact(
+    examples: list[Example], cutoff: datetime, offset: timezone, version: str,
+) -> dict[str, object]:
+    curves = {
+        turbine_id: fit_curve([item for item in examples if item.turbine_id == turbine_id], cutoff).to_dict()
+        for turbine_id in TURBINE_IDS
+    }
+    return {
+        "model_family": MODEL_VERSION,
+        "model_version": version,
+        "weather_source": SOURCE,
+        "csv_utc_offset_assumption": offset.utcoffset(None).total_seconds() / 3600,
+        "training_cutoff_exclusive": cutoff.isoformat(),
+        "hour_label_assumption": "six ten-minute samples HH:00 through HH:50 form hour (HH:00, HH+1:00]",
+        "curves": curves,
+    }
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--csv-utc-offset", required=True, type=parse_offset,
@@ -89,6 +107,7 @@ def main() -> None:
     parser.add_argument("--data-dir", type=Path, default=ROOT / "data" / "raw")
     parser.add_argument("--output-dir", type=Path, default=ROOT / "data" / "processed")
     parser.add_argument("--model-path", type=Path, default=ROOT / "forecasting" / "artifacts" / "baseline_model.json")
+    parser.add_argument("--pre-model-path", type=Path, default=ROOT / "forecasting" / "artifacts" / "baseline_pre_20260131T1200Z.json")
     parser.add_argument("--weather-cache", type=Path, default=ROOT / "data" / "weather" / "ecmwf_ifs")
     args = parser.parse_args()
     if args.start >= date(2025, 12, 1) or args.end < date(2026, 1, 1):
@@ -128,6 +147,7 @@ def main() -> None:
                     "weather_source": SOURCE,
                     "weather_run_id": run.run_id,
                     "weather_run_issued_at": run.initialized_at.isoformat(),
+                    "weather_run_initialized_at": run.initialized_at.isoformat(),
                     "weather_run_usable_after_at": run.usable_after_at.isoformat(),
                     "weather_actual_publication_at": None,
                     "availability_basis": "nominal cycle time plus 12-hour conservative delay; exact historical publication unavailable",
@@ -155,23 +175,13 @@ def main() -> None:
                                 "training_points": model.training_count, **score(model, test),
                                 **persistence_score(test, power[turbine_id], model)})
 
-    final_cutoff = datetime(2026, 2, 1, tzinfo=UTC)
-    curves = {
-        turbine_id: fit_curve([item for item in by_horizon[24] if item.turbine_id == turbine_id], final_cutoff).to_dict()
-        for turbine_id in TURBINE_IDS
-    }
-    model_artifact = {
-        "model_version": MODEL_VERSION,
-        "weather_source": SOURCE,
-        "csv_utc_offset_assumption": args.csv_utc_offset.utcoffset(None).total_seconds() / 3600,
-        "training_cutoff_exclusive": final_cutoff.isoformat(),
-        "hour_label_assumption": "six ten-minute samples HH:00 through HH:50 form hour (HH:00, HH+1:00]",
-        "curves": curves,
-    }
-    args.model_path.parent.mkdir(parents=True, exist_ok=True)
-    args.model_path.write_text(
-        json.dumps(model_artifact, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
-    )
+    for path, cutoff, version in (
+        (args.pre_model_path, datetime(2026, 1, 31, 12, tzinfo=UTC), f"{MODEL_VERSION}_pre_20260131T1200Z"),
+        (args.model_path, datetime(2026, 2, 1, tzinfo=UTC), f"{MODEL_VERSION}_final_20260201T0000Z"),
+    ):
+        artifact = build_model_artifact(by_horizon[24], cutoff, args.csv_utc_offset, version)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps(artifact, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     report = {"model_version": MODEL_VERSION, "quality": quality, "archive_run_count": len(launches) // 4,
               "historical_launch_count": len(launches),
               "weather_grid_coordinates": {site: run.grid_coordinates[site] for site in TURBINE_IDS},
