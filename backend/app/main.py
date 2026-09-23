@@ -11,6 +11,7 @@ from pathlib import Path
 from fastapi import FastAPI, HTTPException
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
+from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from backend.app.db import save_run
 from backend.app.forecast_service import EngineNotReady, InvalidForecast, SourceUnavailable, run_forecast
@@ -24,9 +25,9 @@ DATA_DIR = Path(os.getenv("DATA_DIR", str(ROOT / "data" / "raw")))
 app = FastAPI(title="Прогноз выработки ВЭС", version="0.1.0")
 
 
-@app.exception_handler(HTTPException)
-async def http_error(_, exc: HTTPException) -> JSONResponse:
-    return JSONResponse(status_code=exc.status_code, content={"error": str(exc.detail)})
+@app.exception_handler(StarletteHTTPException)
+async def http_error(_, exc: StarletteHTTPException) -> JSONResponse:
+    return JSONResponse(status_code=exc.status_code, content={"error": str(exc.detail)}, headers=exc.headers)
 
 
 @app.exception_handler(RequestValidationError)

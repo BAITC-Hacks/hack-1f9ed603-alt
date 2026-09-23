@@ -12,7 +12,10 @@ from pydantic import BaseModel, Field, field_serializer, field_validator, model_
 def require_aware_utc(value: datetime) -> datetime:
     if value.tzinfo is None or value.utcoffset() is None:
         raise ValueError("Укажите часовой пояс")
-    return value.astimezone(timezone.utc)
+    try:
+        return value.astimezone(timezone.utc)
+    except OverflowError as exc:
+        raise ValueError("Время выходит за поддерживаемый диапазон UTC") from exc
 
 
 def utc_string(value: datetime) -> str:
@@ -24,6 +27,18 @@ class ForecastRunRequest(BaseModel):
     issued_at: datetime
     horizon_hours: Literal[24, 48]
 
+    @field_validator("issued_at", mode="before")
+    @classmethod
+    def require_iso_timestamp(cls, value: object) -> object:
+        if not isinstance(value, (str, datetime)):
+            raise ValueError("issued_at должен быть ISO 8601 с часовым поясом")
+        if isinstance(value, str):
+            try:
+                return datetime.fromisoformat(value.replace("Z", "+00:00"))
+            except ValueError as exc:
+                raise ValueError("issued_at должен быть ISO 8601 с часовым поясом") from exc
+        return value
+
     @field_validator("issued_at")
     @classmethod
     def validate_issued_at(cls, value: datetime) -> datetime:
@@ -32,10 +47,19 @@ class ForecastRunRequest(BaseModel):
             raise ValueError("Время запуска должно приходиться на начало часа по UTC")
         return issued_at
 
+    @model_validator(mode="after")
+    def validate_date_range(self) -> ForecastRunRequest:
+        try:
+            self.issued_at + timedelta(hours=self.horizon_hours)
+            self.issued_at - timedelta(hours=18)
+        except OverflowError as exc:
+            raise ValueError("Дата запуска выходит за поддерживаемый диапазон") from exc
+        return self
+
 
 class ForecastPoint(BaseModel):
     time: datetime
-    normalized_power: float = Field(ge=0.0, le=1.0)
+    normalized_power: float = Field(ge=0.0, le=1.0, allow_inf_nan=False, strict=True)
 
     @field_validator("time")
     @classmethod

@@ -69,6 +69,8 @@ docker compose up --build
 ```bash
 python -m forecasting.train_baseline --csv-utc-offset +05:00
 python -m forecasting.replay_february
+python -m forecasting.audit
+python -m pip install -r backend/requirements-test.txt
 python -m unittest discover -s forecasting/tests -v
 python -m unittest discover -s backend/tests -v
 cd frontend && npm ci && npm run build
@@ -101,6 +103,8 @@ curl -X POST http://localhost:8000/api/forecast-runs \
 - Высота измерения ветра в CSV не указана; прогноз погоды использует скорость ветра на высоте 100 м.
 
 ## Отчёт проверки — 23 сентября 2026
+
+Последующая проверка backend и forecasting, включая 37 тестов, все 116 запусков через API и реалистичность прогнозов, описана в [backend/QA.md](backend/QA.md). Она выполнена в отдельном чистом Python-окружении; Docker после этих доработок не перепроверялся. Ниже сохранён отчёт предыдущей проверки команды.
 
 Проверка выполнена из нового клона `main` без ручного копирования данных. Создание Python-окружения и установка `backend/requirements.txt`, обучение модели, февральский replay, оба набора `unittest` (12 forecasting и 7 backend), `npm ci`, `npm run build` и `docker compose up --build` прошли успешно. Replay сформировал 116 успешных запусков без ошибок.
 

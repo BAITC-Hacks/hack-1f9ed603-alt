@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import argparse
-import json
 from collections.abc import Callable, Iterator
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
@@ -11,6 +10,7 @@ from pathlib import Path
 from forecasting.dataset import TURBINE_IDS
 from forecasting.forecast import ForecastUnavailable, forecast
 from forecasting.weather import SAFE_DELAY, SOURCE, select_run
+from forecasting.storage import write_json
 
 ROOT = Path(__file__).resolve().parents[1]
 UTC = timezone.utc
@@ -63,7 +63,9 @@ def replay(
                 weather_source=result["weather_source"],
                 weather_run_id=result["weather_run_id"],
                 weather_run_issued_at=result["weather_run_issued_at"],
+                weather_run_initialized_at=result["weather_run_initialized_at"],
                 weather_run_usable_after_at=result["weather_run_usable_after_at"],
+                weather_actual_publication_at=result["weather_actual_publication_at"],
                 points=result["points"],
             )
         records.append(record)
@@ -76,8 +78,7 @@ def replay(
         "error_count": sum(record["status"] == "error" for record in records),
         "runs": records,
     }
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    output_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    write_json(output_path, manifest)
     return manifest
 
 

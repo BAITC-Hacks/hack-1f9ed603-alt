@@ -38,6 +38,11 @@ def forecast(
     issued = issued_at.astimezone(UTC)
     if issued.minute or issued.second or issued.microsecond:
         raise ForecastUnavailable("Архив погоды поддерживает запуск только в начале часа")
+    try:
+        issued + timedelta(hours=horizon_hours)
+        issued - timedelta(hours=18)
+    except OverflowError as exc:
+        raise ValueError("Дата запуска выходит за поддерживаемый диапазон") from exc
     paths = [model_path] if model_path is not None else sorted(model_dir.glob("baseline*.json"))
     candidates: list[tuple[datetime, str, PowerCurve]] = []
     for path in paths:
@@ -45,18 +50,25 @@ def forecast(
             artifact = json.loads(path.read_text(encoding="utf-8"))
         except (OSError, ValueError) as exc:
             raise ForecastUnavailable("Обученная модель недоступна") from exc
+        if not isinstance(artifact, dict):
+            raise ForecastUnavailable("Артефакт модели должен быть объектом JSON")
         if (artifact.get("model_family", artifact.get("model_version")) != MODEL_VERSION
                 or artifact.get("weather_source") != SOURCE):
             raise ForecastUnavailable("Версия обученной модели несовместима с погодным источником")
         try:
             curve = PowerCurve.from_dict(artifact["curves"][turbine_id])
             training_cutoff = datetime.fromisoformat(artifact["training_cutoff_exclusive"])
-        except (KeyError, TypeError, ValueError) as exc:
+            version = artifact["model_version"]
+            if not isinstance(version, str) or not version.strip():
+                raise ValueError("Нет версии модели")
+        except (KeyError, TypeError, ValueError, AttributeError, OverflowError) as exc:
             raise ForecastUnavailable("Артефакт модели повреждён") from exc
         if training_cutoff.tzinfo is None or training_cutoff.utcoffset() is None:
             raise ForecastUnavailable("В артефакте модели нет часового пояса")
+        if curve.trained_through >= training_cutoff:
+            raise ForecastUnavailable("Модель обучена за пределами заявленной временной границы")
         if training_cutoff <= issued and curve.trained_through < issued:
-            candidates.append((curve.trained_through, artifact["model_version"], curve))
+            candidates.append((curve.trained_through, version, curve))
     if not candidates:
         raise ForecastUnavailable("Для исторического запуска нужна модель, обученная до момента запуска")
     _, model_version, curve = max(candidates, key=lambda item: item[0])

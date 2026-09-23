@@ -13,6 +13,7 @@ python -m forecasting.train_baseline --csv-utc-offset +05:00
 python -m unittest discover -s forecasting/tests -v
 python -m forecasting.forecast turbine_1 2026-02-01T12:00:00Z 48
 python -m forecasting.replay_february
+python -m forecasting.audit
 ```
 
 The `+05:00` offset is an explicit working assumption supplied by the user. The CSV itself does not declare a timezone, and the organizers have not confirmed it. Never silently infer the offset from the turbine coordinates.
@@ -26,6 +27,7 @@ The training command writes:
 - `forecasting/artifacts/baseline_model.json`: final per-turbine 0.5 m/s wind-bin power curves, available for February launches.
 - `data/processed/backtest_report.json`: data-quality counts and December/January MAE for 24/48 hours, with constant-mean and last-day persistence comparisons.
 - `data/processed/february_replay.json`: one daily launch at 12:00 UTC from 31 January through 28 February inclusive, for each turbine and 24/48-hour horizon (116 records). Each record includes the model version, training cutoff, weather run ID, initialization time, conservative usability time, and 24/48 points. Unavailable weather or models are recorded as errors with no placeholder points; the command then exits with status 1.
+- `data/processed/validation_report.json`: replay integrity checks, prediction and wind distributions, rare wind values outside the training bins, large hourly changes, and chronological MAE/RMSE/bias with baseline comparisons. Run training and replay before the audit to refresh its inputs; hashes identify the exact reports checked.
 
 The model is trained on archived **forecast wind at 100 m**, matched to observed normalized power by time. November 2025 trains the December fold; November–December train the January fold. The pre-31-January artifact uses labels strictly before `2026-01-31T12:00:00Z`; the final artifact uses all available examples through January 2026. Forecasting automatically selects the latest model whose training cutoff and latest label precede the requested launch. The February replay reads model artifacts and archived weather forecasts, never actual February power. February error cannot be measured from this repository.
 
@@ -36,6 +38,16 @@ The ten-minute CSV timestamp has an unknown interval convention. The implementat
 Open-Meteo's `run` parameter is the **model initialization time**, not the exact time the forecast appeared on its API. The archive does not expose historical publication timestamps. [Open-Meteo documents a typical 4–6 hour computation delay](https://open-meteo.com/en/docs/single-runs-api), and [ECMWF publishes a dissemination schedule](https://confluence.ecmwf.int/pages/viewpage.action?pageId=621039623). This baseline conservatively allows a run only 12 hours after initialization. `weather_run_issued_at` in the public result is the nominal ECMWF cycle time, **not a verified API publication timestamp**. The historical-launch manifest stores `weather_run_usable_after_at` separately and leaves `weather_actual_publication_at` null. If exact publication times become available, replace the conservative rule and populate that field.
 
 The height of wind measurements in the turbine CSV is unknown. The 100 m forecast wind may differ from turbine measurements, and the 9 km weather grid cannot represent local terrain perfectly. These uncertainties are visible in the report rather than hidden as confirmed facts.
+
+## Result realism and validation
+
+December/January chronological MAE is 0.192–0.250 (19.2–25.0 percentage points of normalized power), 27–40% lower than a constant training-mean forecast and 34–50% lower than repeating the last day on matching points. January bias is positive, about 0.064–0.072: the baseline overpredicts mean power in that month. These are retrospective validation results, not February accuracy estimates.
+
+The February 48-hour forecasts range from 0.055 to 0.867. Both turbines use the same weather grid cell, so similar profiles are expected. Sparse wind bins are shrunk toward the training mean; this can underestimate peaks and create decreases at high forecast wind speeds. The curve is a statistical mapping from forecast grid wind to observed power, not a manufacturer power curve. No turbine cut-in/cut-out speeds or ramp limits are supplied, so these must not be invented.
+
+The audit flags large ramps instead of silently smoothing them: the largest power change is about 0.777 in one hour, corresponding to archived forecast wind changing from 2.20 to 9.36 m/s on 26 February at 06:00 UTC. A fresh download of the 25 February weather run matched the cached data. Six of 1,392 launch/lead pairs per turbine in the 48-hour replay fall beyond the trained wind bins and use the nearest fitted bin. Actual February power is unavailable, so these events cannot be verified against turbine behavior.
+
+Malformed weather, non-finite/negative wind, duplicate or shifted weather timestamps, wrong units, invalid power curves, and inconsistent training cutoffs are rejected. Weather responses are validated before caching. JSON caches, model artifacts, and manifests are replaced atomically, so concurrent readers see a complete file. Failed runs never become placeholder forecasts.
 
 ## Backend handoff
 

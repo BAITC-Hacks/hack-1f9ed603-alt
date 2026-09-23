@@ -11,13 +11,15 @@ from forecasting.baseline import MODEL_VERSION, Example, PowerCurve, fit_curve, 
 from forecasting.dataset import TURBINE_IDS
 from forecasting.hourly import HourlyObservation, load_hourly, write_hourly_csv
 from forecasting.weather import SOURCE, WeatherRun, fetch_run
+from forecasting.storage import write_json
 
 ROOT = Path(__file__).resolve().parents[1]
 UTC = timezone.utc
 
 
 def parse_offset(value: str) -> timezone:
-    if len(value) != 6 or value[0] not in "+-" or value[3] != ":":
+    if (len(value) != 6 or value[0] not in "+-" or value[3] != ":"
+            or not value[1:3].isdigit() or not value[4:6].isdigit()):
         raise argparse.ArgumentTypeError("Используйте смещение вида +05:00")
     try:
         hours, minutes = int(value[1:3]), int(value[4:6])
@@ -154,9 +156,7 @@ def main() -> None:
                 })
         for horizon in (24, 48):
             by_horizon[horizon].extend(build_examples(run, issued_at, power, horizon))
-    (args.output_dir / "historical_launches.json").write_text(
-        json.dumps(launches, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
-    )
+    write_json(args.output_dir / "historical_launches.json", launches)
 
     folds = [
         ("2025-12", datetime(2025, 12, 1, tzinfo=UTC), datetime(2026, 1, 1, tzinfo=UTC)),
@@ -180,8 +180,7 @@ def main() -> None:
         (args.model_path, datetime(2026, 2, 1, tzinfo=UTC), f"{MODEL_VERSION}_final_20260201T0000Z"),
     ):
         artifact = build_model_artifact(by_horizon[24], cutoff, args.csv_utc_offset, version)
-        path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(json.dumps(artifact, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        write_json(path, artifact)
     report = {"model_version": MODEL_VERSION, "quality": quality, "archive_run_count": len(launches) // 4,
               "historical_launch_count": len(launches),
               "weather_grid_coordinates": {site: run.grid_coordinates[site] for site in TURBINE_IDS},
@@ -191,9 +190,7 @@ def main() -> None:
                   "Exact historical weather publication times are not supplied; use is delayed 12 hours.",
                   "Weather is forecast wind at 100 m; height of CSV wind measurements is unknown.",
               ]}
-    (args.output_dir / "backtest_report.json").write_text(
-        json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
-    )
+    write_json(args.output_dir / "backtest_report.json", report)
     print(json.dumps(report, ensure_ascii=False, indent=2))
 
 

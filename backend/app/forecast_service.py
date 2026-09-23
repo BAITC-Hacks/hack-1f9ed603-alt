@@ -49,7 +49,7 @@ def run_forecast(request: ForecastRunRequest) -> ForecastRunResponse:
             horizon_hours=request.horizon_hours,
         )
     except (ConnectionError, TimeoutError, OSError) as exc:
-        raise SourceUnavailable from exc
+        raise SourceUnavailable(str(exc)) from exc
 
     if not isinstance(payload, Mapping):
         raise InvalidForecast("Ядро должно вернуть словарь")
@@ -65,4 +65,4 @@ def run_forecast(request: ForecastRunRequest) -> ForecastRunResponse:
     try:
         return ForecastRunResponse.model_validate(data)
     except ValidationError as exc:
-        raise InvalidForecast from exc
+        raise InvalidForecast("Результат ядра не соответствует схеме API") from exc

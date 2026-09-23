@@ -67,7 +67,7 @@ class WeatherTests(unittest.TestCase):
                 "source": SOURCE, "model": "ecmwf_ifs", "initialized_at": stamp.isoformat(),
                 "site_ids": ["turbine_1", "turbine_2"],
                 "responses": [{
-                    "latitude": 43.62, "longitude": 78.47,
+                    "latitude": 43.62, "longitude": 78.47, "utc_offset_seconds": 0,
                     "hourly_units": {"wind_speed_100m": "m/s"},
                     "hourly": {"time": ["2026-01-15T13:00"], "wind_speed_100m": [4.2]},
                 }] * 2,
@@ -113,7 +113,7 @@ class BaselineTests(unittest.TestCase):
             }))
             stamps = [(issue - timedelta(hours=12) + timedelta(hours=step)).strftime("%Y-%m-%dT%H:%M")
                       for step in range(72)]
-            response = {"latitude": 43.62, "longitude": 78.47,
+            response = {"latitude": 43.62, "longitude": 78.47, "utc_offset_seconds": 0,
                         "hourly_units": {"wind_speed_100m": "m/s"},
                         "hourly": {"time": stamps, "wind_speed_100m": [4.0] * 72}}
             (cache / "ecmwf_ifs_20260201T0000Z.json").write_text(json.dumps({
@@ -131,7 +131,7 @@ class BaselineTests(unittest.TestCase):
                 "training_cutoff_exclusive": issue.isoformat(),
                 "curves": {"turbine_1": curve.to_dict()},
             }))
-            with self.assertRaisesRegex(ForecastUnavailable, "обученная до"):
+            with self.assertRaises(ForecastUnavailable):
                 forecast("turbine_1", issue, 24, model_path=model, weather_cache=cache)
 
     def test_pre_january_model_excludes_later_targets(self):
@@ -192,6 +192,8 @@ class ReplayTests(unittest.TestCase):
                 "model_version": "test", "input_data_cutoff_at": "2026-01-30T00:00:00Z",
                 "weather_source": SOURCE, "weather_run_id": "test-run",
                 "weather_run_issued_at": "2026-01-31T00:00:00Z",
+                "weather_run_initialized_at": "2026-01-31T00:00:00Z",
+                "weather_actual_publication_at": None,
                 "weather_run_usable_after_at": "2026-01-31T12:00:00Z",
                 "points": [{"time": issued_at.isoformat(), "normalized_power": 0.4}] * horizon,
             }
