@@ -1,3 +1,5 @@
+import type { MessageKey } from "./messages";
+
 export type TurbineSummary = {
   id: "turbine_1" | "turbine_2";
   latitude: number;
@@ -40,16 +42,56 @@ export type ForecastRunResponse = {
   points: ForecastPoint[];
 };
 
-async function request<T>(path: string, options?: RequestInit): Promise<T> {
-  const response = await fetch(path, {
-    ...options,
-    headers: { "Content-Type": "application/json", ...options?.headers },
-  });
-  const body: unknown = await response.json();
-  if (!response.ok) {
-    const error = body as { error?: string };
-    throw new Error(error.error ?? `HTTP ${response.status}`);
+export class ApiError extends Error {
+  readonly messageKey: MessageKey;
+  readonly status?: number;
+
+  constructor(messageKey: MessageKey, status?: number, cause?: unknown) {
+    super(messageKey, { cause });
+    this.name = "ApiError";
+    this.messageKey = messageKey;
+    this.status = status;
   }
+}
+
+// The backend currently returns text rather than stable error codes.
+const serverMessages: readonly MessageKey[] = [
+  "Исходные данные недоступны или повреждены",
+  "Прогнозная модель пока не подключена",
+  "Данные для прогноза временно недоступны",
+  "Прогнозная модель вернула некорректный результат",
+  "Не удалось сохранить прогноз",
+  "Внутренняя ошибка сервера",
+];
+
+function serverError(status: number, body: unknown): ApiError {
+  const detail = isRecord(body) && typeof body.error === "string" ? body.error : undefined;
+  const known = serverMessages.find((message) => message === detail);
+  const fallback: MessageKey = status === 422 || status === 400
+    ? "Сервер отклонил параметры запроса. Проверьте время, турбину и горизонт."
+    : status === 503 ? "Сервис временно недоступен. Повторите попытку позже."
+    : status >= 500 ? "Внутренняя ошибка сервера" : "Не удалось выполнить запрос";
+  return new ApiError(known ?? fallback, status, detail);
+}
+
+async function request<T>(path: string, options?: RequestInit): Promise<T> {
+  let response: Response;
+  try {
+    response = await fetch(path, {
+      ...options,
+      headers: { "Content-Type": "application/json", ...options?.headers },
+    });
+  } catch (cause) {
+    throw new ApiError("Не удалось связаться с сервером. Проверьте подключение и повторите попытку.", undefined, cause);
+  }
+  let body: unknown;
+  try {
+    body = await response.json();
+  } catch (cause) {
+    if (!response.ok) throw serverError(response.status, undefined);
+    throw new ApiError("Сервер вернул некорректный ответ", response.status, cause);
+  }
+  if (!response.ok) throw serverError(response.status, body);
   return body as T;
 }
 
@@ -108,7 +150,7 @@ export async function createForecastRun(payload: ForecastRunRequest): Promise<Fo
     body: JSON.stringify(payload),
   });
   if (!isForecastRunResponse(result, payload)) {
-    throw new Error("API вернул прогноз, не соответствующий контракту");
+    throw new ApiError("API вернул прогноз, не соответствующий контракту");
   }
   return result;
 }
