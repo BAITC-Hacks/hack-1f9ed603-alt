@@ -27,3 +27,29 @@ input { display: block; margin-top: 7px; width: 270px; max-width: 100%; padding:
 .form-row { display: flex; flex-wrap: wrap; align-items: end; gap: 16px; margin-top: 22px; }
 .form-row label { font-weight: 600; }
 .error { color: #aa3131; }
+.result-note { color: #536b72; line-height: 1.5; }
+.result-panel { margin-top: 28px; }
+.result-panel .eyebrow { margin: 0 0 8px; }
+.result-panel h2 { margin-bottom: 8px; }
+.result-panel h3 { margin: 30px 0 16px; }
+.chart-wrap { overflow-x: auto; margin-top: 24px; }
+.forecast-chart { display: block; width: 100%; min-width: 620px; height: auto; }
+.chart-grid { stroke: #dce7e3; stroke-width: 1; }
+.chart-label { fill: #536b72; font: 12px ui-sans-serif, system-ui, sans-serif; }
+.chart-line { fill: none; stroke: #126b62; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+.chart-point { fill: #126b62; }
+.metadata-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px 24px; margin: 0; }
+.metadata-grid div { min-width: 0; }
+.metadata-grid dt { color: #536b72; font-size: .88rem; margin-bottom: 5px; }
+.metadata-grid dd { margin: 0; overflow-wrap: anywhere; font-weight: 600; }
+.code-value { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: .92rem; }
+.table-wrap { overflow-x: auto; }
+.forecast-table { width: 100%; border-collapse: collapse; text-align: left; font-variant-numeric: tabular-nums; }
+.forecast-table th, .forecast-table td { padding: 11px 14px; border-bottom: 1px solid #e5eeeb; }
+.forecast-table th { color: #536b72; font-size: .88rem; font-weight: 600; white-space: nowrap; }
+.forecast-table td:last-child, .forecast-table th:last-child { text-align: right; }
+@media (max-width: 600px) {
+  .page { padding: 26px 16px 56px; }
+  .panel { padding: 20px; }
+  .section-heading { flex-wrap: wrap; }
+}
